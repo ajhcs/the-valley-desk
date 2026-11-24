@@ -363,6 +363,28 @@ function jsonLd(schemas: Schema[], nonce?: string) {
   return `<script id="directory-schema" type="application/ld+json"${nonce ? ` nonce="${html(nonce)}"` : ""}>${safe}</script>`;
 }
 
+/** The JSON twin of a directory page, so agents can skip the HTML. */
+export function jsonAlternate(path: string | undefined) {
+  if (!path) return undefined;
+  const [base, query = ""] = path.split("?");
+  const record: [RegExp, string][] = [
+    [/^\/discover\/publication\/(.+)$/, "/api/directory/publications/"],
+    [/^\/discover\/study\/(.+)$/, "/api/directory/studies/"],
+    [/^\/discover\/dataset\/(.+)$/, "/api/directory/datasets/"],
+    [/^\/discover\/regional-data\/(.+)$/, "/api/directory/regional-data/"],
+    [/^\/discover\/work\/(\d+)$/, "/api/directory/projects/"],
+  ];
+  for (const [pattern, api] of record) {
+    const match = pattern.exec(base);
+    if (match) return api + match[1];
+  }
+  const scope = /^\/discover\/(institution|topic|county)\/([^/]+)$/.exec(base);
+  if (scope) return `/api/directory/listings?${scope[1]}=${scope[2]}${query ? "&" + query : ""}`;
+  if (base === "/discover/datasets") return "/api/directory/datasets" + (query ? "?" + query : "");
+  if (base === "/discover/works" || base === "/discover/new" || base === "/") return "/api/directory/listings" + (query ? "?" + query : "");
+  return undefined;
+}
+
 export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatalog, origin: string, nonce?: string) {
   let content: string;
   switch (view.kind) {
@@ -403,6 +425,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     <meta property="og:image:alt" content="The Valley Desk, healthcare research in the Delaware Valley">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="alternate" type="application/rss+xml" title="${html(feed.title)}" href="${html(feed.href)}">` : ""}
+    ${jsonAlternate(head.canonical) ? `<link rel="alternate" type="application/json" href="${html(jsonAlternate(head.canonical)!)}">` : ""}
     ${head.meta ?? ""}
     ${jsonLd(head.schema, nonce)}
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

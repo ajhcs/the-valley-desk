@@ -3,7 +3,6 @@ import { countyGeometry, countyViewBox } from "./public-directory-counties";
 import { browsePath, counties, type DirectoryCatalog } from "./public-directory-data";
 import { asOf, entityHref, kindPhrase, summaryLedger, type DirectorySummary, type Names } from "./public-directory-entity";
 import { count, healthTopic, href, html, kindLedger, projectCards, searchInput, timestamp } from "./public-directory-ui";
-import { icon } from "./public-directory-icons";
 
 type Home = ReturnType<DirectoryCatalog["home"]>;
 type Row = { name: string; href: string; n: number; note?: string };
@@ -43,7 +42,7 @@ function map(rows: Map<string, number>, hrefFor: (name: string) => string, unit:
         })
         .join("")}
     </svg>
-    <figcaption>Darker counties have more ${unit}. Select a county to open it.</figcaption>
+    <figcaption>Darker counties have more ${unit}.</figcaption>
   </figure>`;
 }
 
@@ -79,18 +78,19 @@ export function renderDirectoryHome(
     ? summary.facets.institution.map((r) => ({ name: names.institution(r.value), href: entityHref("institution", r.value), n: r.n }))
     : home.institutions.map((r) => ({ name: r.name, href: catalog.entityHref("institution", r.name), n: r.count }));
   const unit = research ? "listings" : "projects";
+  const week = research && summary.week ? Object.values(summary.week).reduce((sum, n) => sum + (n ?? 0), 0) : 0;
   const added = research ? Object.values(summary.kinds).map((kind) => kind.added).filter(Boolean).sort().at(-1) : undefined;
   return `<div class="frame home">
     <section class="home-intro">
       <div class="home-lead">
-        <p class="eyebrow">${icon("place")}Nine counties in Pennsylvania and New Jersey</p>
         <h1>Healthcare research in the Delaware Valley</h1>
-        ${research ? kindLedger(summaryLedger(summary), "hero", "The directory by kind of listing") : `<p class="lede">${lede}</p>`}
-        ${research && added ? `<p class="ledger-stamp"><span class="ledger-live" aria-hidden="true"></span>Updated ${timestamp(added)} · <a href="/discover/new">see what was added</a></p>` : ""}
-        <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput("", research ? "Search a subject to see who in the region works on it" : undefined)}</form>
-        ${home.examples.length ? `<p class="home-examples"><span>Try</span>${home.examples.map((example) => `<a class="chip" href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join("")}</p>` : ""}
+        ${research
+          ? kindLedger(summaryLedger(summary), ` connected to nine counties in Pennsylvania and New Jersey.${week ? ` <a class="ledger-new" href="/discover/new">${count(week)} added this week</a>` : ""}`)
+          : `<p class="lede">${lede}</p>`}
+        <form class="home-search" role="search" action="${browsePath}" method="get">${searchInput("", "Search a subject or institution")}</form>
+        ${home.examples.length ? `<p class="home-examples">Try ${home.examples.map((example) => `<a href="${href({ q: example, sort: "relevance" })}">${html(example)}</a>`).join(", ")}</p>` : ""}
       </div>
-      <div class="home-map">
+      <div class="home-map" aria-hidden="true">
         ${map(countyCounts, (name) => (research ? entityHref("county", name.toLowerCase()) : catalog.entityHref("county", name)), unit)}
       </div>
     </section>

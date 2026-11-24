@@ -629,7 +629,7 @@ async function renderPublicDirectory(
       const regionalLinks = hasRegionalData && !head ? await rows<Pick<RegionalData, "id" | "title">>(
         researchDb, "SELECT id,title FROM research_visible WHERE kind='regional-data' ORDER BY title COLLATE NOCASE,id LIMIT 100",
       ) : [];
-      return new Response(head ? null : llmsTxt(origin, true, hasPubs, hasDatasets) +
+      return new Response(head ? null : llmsTxt(origin, true, hasPubs, hasDatasets, hasStudies, hasRegionalData) +
         (hasRegionalData ? regionalDataLlms(origin, regionalLinks) : ""), {
         headers: { ...noStore, "content-type": "text/plain; charset=utf-8" },
       });

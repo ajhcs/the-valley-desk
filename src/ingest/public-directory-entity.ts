@@ -189,7 +189,7 @@ function tallyList(heading: string, rows: Tally[], field: ScopeField, names: Nam
 }
 
 export function asOf(now: Date) {
-  return `<p class="as-of">Counted ${timestamp(now.toISOString().slice(0, 10))}. A preprint and its journal version count once. Listings meet the <a href="/discover/methodology">inclusion rule</a>; they are not a complete record of regional research.</p>`;
+  return `<p class="as-of">Counted ${timestamp(now.toISOString().slice(0, 10))} from listings that meet the <a href="/discover/methodology">inclusion rule</a>, not a complete record of regional research.</p>`;
 }
 
 const kindParam = (kind: string) => (kind === "dataset" || kind === "regional-data" ? "/discover/datasets?kind=" + kind : "/discover/works?kind=" + kind);
@@ -200,7 +200,6 @@ export function summaryLedger(summary: DirectorySummary, scope?: { field: ScopeF
     .map(([kind]) => ({
       kind,
       n: summary.kinds[kind]?.works ?? 0,
-      week: summary.week?.[kind],
       href: kindParam(kind) + (scope ? `&${scope.field}=${encodeURIComponent(scope.value)}` : ""),
     }))
     .filter((entry) => entry.n);

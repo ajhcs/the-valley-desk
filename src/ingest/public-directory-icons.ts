@@ -13,11 +13,6 @@ const paths = {
   regional: '<path d="M2.75 5.25 7.5 3.5l5 1.75 4.75-1.75v11.25L12.5 16.5l-5-1.75-4.75 1.75z"/><path d="M7.5 3.5v11.25M12.5 5.25V16.5"/>',
   // Controls
   search: '<circle cx="8.75" cy="8.75" r="5.5"/><path d="m12.9 12.9 4.35 4.35"/>',
-  filter: '<path d="M2.75 5.5h14.5M5.5 10h9M8.25 14.5h3.5"/>',
-  sort: '<path d="M6 3.5v13M6 16.5l-3-3M6 16.5l3-3M14 16.5v-13M14 3.5l-3 3M14 3.5l3 3"/>',
-  arrow: '<path d="M3.5 10h12.5M11.5 5.25 16.25 10l-4.75 4.75"/>',
-  close: '<path d="m5.5 5.5 9 9M14.5 5.5l-9 9"/>',
-  calendar: '<rect x="3" y="4.25" width="14" height="12.5" rx="1"/><path d="M3 8.25h14M6.75 2.75v3M13.25 2.75v3"/>',
   feed: '<path d="M4 4.25a11.75 11.75 0 0 1 11.75 11.75M4 9a7 7 0 0 1 7 7"/><circle cx="4.75" cy="15.25" r="1.25"/>',
   // Dataset access: an open padlock, a key, a closed padlock
   "access-open": '<rect x="4" y="9" width="12" height="8.25" rx="1"/><path d="M7 9V6.25a3 3 0 0 1 5.85-.95M10 12.25v1.75"/>',
