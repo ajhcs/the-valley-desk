@@ -1707,6 +1707,9 @@
       ],
       "how_to_use": [
         "https://opendataphilly.org/datasets/neighborhood-food-retail/"
+      ],
+      "update_cadence": [
+        "https://opendataphilly.org/datasets/archived-philadelphia-food-access/"
       ]
     },
     "query": {

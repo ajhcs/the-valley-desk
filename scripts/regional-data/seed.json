@@ -930,7 +930,7 @@
     ],
     "granularity": "Neighborhood",
     "time_span": null,
-    "update_cadence": null,
+    "update_cadence": "Annual",
     "access": "open",
     "license": "City of Philadelphia License",
     "formats": [
