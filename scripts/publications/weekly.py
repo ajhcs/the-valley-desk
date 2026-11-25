@@ -8,12 +8,14 @@ import heapq
 import json
 import os
 from pathlib import Path
+import re
+import time
 
-from collect import EuropePmcCoverageError, add_observation, deduplicate, doi, europepmc_rows
+from collect import EuropePmcCoverageError, add_observation, deduplicate, doi, epmc_ids, europepmc_rows
 from enrich import crossref_lookup
 from institutions import load_reference, REFERENCE
 from mechanical import MechanicalProjector, identity_tokens
-from receipts import Receipts
+from receipts import MetadataError, Receipts
 from sizing import EPMC_CORPUS, Source, epmc_query
 from validate import CONTENT, DATASET, REMOVALS, validate_records
 from weekly_topics import model_topics, source_topic
@@ -60,13 +62,54 @@ def collect(private, start, stop):
     receipts = Receipts(private)
     source = Source("europepmc", receipts, True)
     institutions = load_reference(REFERENCE)
-    observations = {}
+    shards = {}
+    retry = []
     with ThreadPoolExecutor(max_workers=5) as pool:
-        futures = {ref["id"]: pool.submit(epmc_window, source, ref, start, stop) for ref in institutions}
-        for slug, future in futures.items():
-            for r in future.result():
-                add_observation(observations, "europepmc", r, [slug])
+        futures = [(ref, pool.submit(epmc_window, source, ref, start, stop)) for ref in institutions]
+        for ref, future in futures:
+            try:
+                shards[ref["id"]] = future.result()
+            except MetadataError as error:
+                if error.status not in (None, 500, 502, 503, 504):
+                    raise
+                retry.append(ref)
+    if retry:
+        # Successful pages remain available for replay. Retry failed shards once,
+        # after the first pass has completed and the provider has had time to recover.
+        time.sleep(20)
+        for ref in retry:
+            shards[ref["id"]] = epmc_window(source, ref, start, stop)
+
+    overlaps = {}
+    for ref in institutions:
+        for record in shards[ref["id"]]:
+            overlaps.setdefault((record["source"], record["id"]), []).append((ref["id"], record))
+    observations = {}
+    for (origin, accession), hits in overlaps.items():
+        record = hits[0][1]
+        if any(other != record for _, other in hits[1:]):
+            record = reconcile_epmc_overlap(source, origin, accession, hits)
+        add_observation(observations, "europepmc", record, [slug for slug, _ in hits])
     return list(deduplicate(observations))
+
+
+def reconcile_epmc_overlap(source, origin, accession, hits):
+    """Check the current source record when overlapping searches return different metadata."""
+    if origin not in {"MED", "PMC", "PPR"} or not re.fullmatch(r"[A-Za-z0-9._-]{1,100}", accession):
+        raise EuropePmcCoverageError("Invalid Europe PMC accession for overlap reconciliation")
+
+    def identity(row):
+        return epmc_ids(row), row.get("title"), row.get("firstIndexDate")
+
+    observed = identity(hits[0][1])
+    if any(identity(record) != observed for _, record in hits[1:]):
+        raise EuropePmcCoverageError("Overlapping Europe PMC hits disagree on identity or index date")
+    records = list(europepmc_rows(source, f"EXT_ID:{accession} AND SRC:{origin}"))
+    if len(records) != 1 or (records[0]["source"], records[0]["id"]) != (origin, accession):
+        raise EuropePmcCoverageError("Exact Europe PMC lookup did not confirm the overlap")
+    if identity(records[0]) != observed:
+        raise EuropePmcCoverageError("Exact Europe PMC lookup changed the identity or index date")
+    return records[0]
 
 
 def files():

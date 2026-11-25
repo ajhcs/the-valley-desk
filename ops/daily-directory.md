@@ -17,6 +17,12 @@ purpose, institution, county, label, topic, license, language or archive status.
 A run can remove up to 25 records per kind. Stars, pushed dates and repository
 descriptions still update. GitHub's missing and unrecognized licenses stay empty.
 
+The runner checks staged dates before it prepares the import. An invalid or
+future date stops the load. Source-reported year or month precision is retained.
+Europe PMC retries transiently failed institution searches once, reusing verified
+pages from the same run. If overlapping searches return different metadata,
+an exact accession lookup must confirm the identity and index date.
+
 The inbox query reads the record ID, type and link. It does not select emails,
 messages or the reader's connection text. GitHub URLs must resolve to a public
 repository with independently supported regional account evidence. Registry and

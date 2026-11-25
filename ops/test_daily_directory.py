@@ -1,4 +1,5 @@
 import importlib.util
+from datetime import date, datetime
 import json
 from pathlib import Path
 import sqlite3
@@ -16,6 +17,37 @@ spec.loader.exec_module(daily)
 
 
 class DailyDirectoryTests(unittest.TestCase):
+    def test_next_scheduled_window_stops_before_load_on_future_date(self):
+        day = datetime(2026, 11, 26, 3, 10, tzinfo=daily.NY)
+        bad = {"publication": {"sample": {"published": "2027-01"}}}
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory)
+            cursor = state / "cursor.json"
+            cursor.write_text('{"loaded_through":"2026-11-24"}')
+            (state / "production-rows-read.json").write_text('{"inbox_available":true}')
+            d1 = SimpleNamespace(reads={}, unmeasured=set(), probe=lambda: "123",
+                                 rows=lambda *_: [{"enabled": 1}], revision=lambda: "live")
+            with patch.object(daily, "datetime") as clock, patch.object(daily, "live_checks"), \
+                    patch.object(daily, "collect", return_value=(bad, [], set())) as collect, \
+                    patch.object(daily, "prepare_load") as load, patch.object(daily, "report"):
+                clock.now.return_value = day
+                self.assertEqual(daily.run(state, d1, plan=False, scheduled=True), 1)
+            self.assertEqual(collect.call_args.args[4:6], (date(2026, 11, 25), date(2026, 11, 25)))
+            load.assert_not_called()
+            self.assertFalse((state / "pending.json").exists())
+            self.assertEqual(json.loads(cursor.read_text())["loaded_through"], "2026-11-24")
+            receipt = json.loads(next((state / "runs").glob("*/receipt.json")).read_text())
+            self.assertEqual((receipt["outcome"], receipt["error"]), ("stopped", "Future publication published date"))
+
+    def test_staged_dates_preserve_partial_precision_and_reject_invalid_days(self):
+        daily.check_staged_dates({
+            "publication": {"one": {"published": "2026-11"}, "two": {"published": None}},
+            "dataset": {"data": {"released": "2025"}},
+            "project": {"repo": {"created": "2026-11-24", "pushed": "2026-11-23"}},
+        }, "2026-11-26")
+        with self.assertRaisesRegex(daily.StopRun, "Invalid study last_updated date"):
+            daily.check_staged_dates({"study": {"trial": {"last_updated": "2026-02-30"}}}, "2026-11-26")
+
     def test_live_checks_verify_detail_ids_for_every_public_kind(self):
         records = {
             "publication": {"doi:10.1234/paper": {"id": "doi:10.1234/paper"}},
