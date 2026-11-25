@@ -5,6 +5,7 @@ import json
 import os
 import re
 import subprocess
+from urllib.parse import quote as url_quote
 
 DATABASE = "the-valley-desk"
 ORIGIN = "https://thevalleydesk.org"
@@ -138,7 +139,7 @@ def snapshot(root, run_dir, day, records):
     files = defaultdict(list)
     for kind, entries in records.items():
         for identifier, record in sorted(entries.items()):
-            name = kind + "s.jsonl"
+            name = "regional-data.jsonl" if kind == "regional-data" else kind + "s.jsonl"
             if kind == "publication":
                 year = (record.get("published") or "")[:4]
                 name = f"publications/{year if year.isdigit() else 'undated'}.jsonl"
@@ -155,7 +156,7 @@ def snapshot(root, run_dir, day, records):
     return commit
 
 
-def live_checks(root, project_id, *, migration_required=True):
+def live_checks(root, project_id, *, migration_required=True, records=None):
     paths = ("/", "/discover/county/philadelphia", f"/discover/work/{project_id}", f"/api/directory/projects/{project_id}")
     for path in paths:
         headers = command(root, "curl", "--silent", "--show-error", "--max-time", "35", "--output", os.devnull,
@@ -165,4 +166,17 @@ def live_checks(root, project_id, *, migration_required=True):
             r"^x-directory-project-source:\s*d1\s*$", headers, re.I | re.M
         ):
             raise RuntimeError(f"Live directory smoke failed for {path}")
-    return dict.fromkeys(paths, 200)
+    statuses = dict.fromkeys(paths, 200)
+    for kind, endpoint, key in (("publication", "publications", "publication"), ("study", "studies", "study"),
+                                ("dataset", "datasets", "dataset"), ("regional-data", "regional-data", "regional_data")):
+        rows = (records or {}).get(kind)
+        if not rows:
+            continue
+        row = max(rows.values(), key=lambda row: (row.get("added") or "", row["id"]))
+        path = f"/api/directory/{endpoint}/{url_quote(row['id'], safe='')}"
+        body = command(root, "curl", "--fail", "--silent", "--show-error", "--max-time", "35",
+                       ORIGIN + path + "?refresh-check=1", label=f"live {kind} detail", timeout=40)
+        if (json.loads(body).get(key) or {}).get("id") != row["id"]:
+            raise RuntimeError(f"Live {kind} detail did not match the D1 listing")
+        statuses[path] = 200
+    return statuses

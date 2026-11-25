@@ -6,6 +6,9 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
+from urllib.parse import unquote
+
+import daily_d1
 
 spec = importlib.util.spec_from_file_location("daily_directory", Path(__file__).with_name("daily-directory.py"))
 daily = importlib.util.module_from_spec(spec)
@@ -13,6 +16,27 @@ spec.loader.exec_module(daily)
 
 
 class DailyDirectoryTests(unittest.TestCase):
+    def test_live_checks_verify_detail_ids_for_every_public_kind(self):
+        records = {
+            "publication": {"doi:10.1234/paper": {"id": "doi:10.1234/paper"}},
+            "study": {"NCT12345678": {"id": "NCT12345678"}},
+            "dataset": {"doi:10.1234/data": {"id": "doi:10.1234/data"}},
+            "regional-data": {"regional:example": {"id": "regional:example"}},
+        }
+        keys = {"publications": "publication", "studies": "study", "datasets": "dataset",
+                "regional-data": "regional_data"}
+
+        def read(_, *args, **kwargs):
+            if "--dump-header" in args:
+                return "HTTP/2 200\nx-directory-project-source: d1\n"
+            endpoint, identifier = args[-1].split("?")[0].rsplit("/", 2)[-2:]
+            return json.dumps({keys[endpoint]: {"id": unquote(identifier)}})
+
+        with patch.object(daily_d1, "command", side_effect=read):
+            statuses = daily_d1.live_checks(Path("."), "123", records=records)
+        self.assertEqual(len(statuses), 8)
+        self.assertTrue(all(status == 200 for status in statuses.values()))
+
     def test_missing_import_result_is_recovered_only_by_the_exact_d1_revision(self):
         def execute(*_):
             raise RuntimeError("Import polling returned no final result")
@@ -183,7 +207,7 @@ class DatasetDailyIntegrationTests(unittest.TestCase):
             (state / "datasets-config.json").write_text(json.dumps({"enabled": True, "first_public_load_confirmed": True}))
             (state / "datasets-cursor.json").write_text(json.dumps({"datacite_through": "2026-11-20T00:00:00Z"}))
             receipt = {"counts": {}}
-            with patch.object(daily, "refresh_projects", return_value=({}, [])), patch.object(daily, "discover_projects", return_value=({}, 0)), patch.object(daily, "collect_publications", return_value=([publication], 0)), patch.object(daily, "studies", return_value=([], 0, set(), 0)), patch.object(daily, "roster_from_public", return_value={}), patch.object(daily, "command", return_value="SELECT 1;"), patch.object(daily.daily_datasets, "collect_phase_one", return_value=[dataset, conflicting]) as source:
+            with patch.object(daily, "refresh_projects", return_value=({}, 0)), patch.object(daily, "discover_projects", return_value=({}, 0)), patch.object(daily, "collect_publications", return_value=([publication], 0)), patch.object(daily, "studies", return_value=([], 0, set(), 0)), patch.object(daily, "roster_from_public", return_value={}), patch.object(daily, "command", return_value="SELECT 1;"), patch.object(daily.daily_datasets, "collect_phase_one", return_value=[dataset, conflicting]) as source:
                 # Give the ordinary publication gate enough baseline for one new paper.
                 fake = FakeD1()
                 fake.listings = lambda kind: baseline if kind == "dataset" else ({f"pmid:{i}": {"id": f"pmid:{i}"} for i in range(20)} if kind == "publication" else {})
