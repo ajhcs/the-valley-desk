@@ -123,7 +123,7 @@ def suggested_publications(run_dir, identifiers):
     from receipts import Receipts
     from sizing import Source
 
-    source = Source("europepmc", Receipts(run_dir), True)
+    source = Source("europepmc", Receipts(run_dir), True, shared_backoff=True)
     observations = {}
     identifiers = sorted(identifiers)
     for start in range(0, len(identifiers), 25):

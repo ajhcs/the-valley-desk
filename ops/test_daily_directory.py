@@ -3,10 +3,11 @@ from datetime import date, datetime
 import json
 from pathlib import Path
 import sqlite3
+import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from urllib.parse import unquote
 
 import daily_d1
@@ -17,6 +18,42 @@ spec.loader.exec_module(daily)
 
 
 class DailyDirectoryTests(unittest.TestCase):
+    def test_next_scheduled_window_blocks_import_on_incomplete_europe_pmc_coverage(self):
+        day = datetime(2026, 11, 26, 3, 10, tzinfo=daily.NY)
+        expression = "FIRST_IDATE:[2026-11-25 TO 2026-11-25]"
+
+        def search(endpoint, **params):
+            self.assertIn(expression, params["query"])
+            hits = int('AFF:"The Wistar Institute"' in params["query"])
+            return {"hitCount": hits, "resultList": {"result": []}}
+
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory)
+            cursor = state / "cursor.json"
+            cursor.write_text('{"loaded_through":"2026-11-24"}')
+            (state / "hold-ids.txt").write_text("")
+            (state / "production-rows-read.json").write_text('{"inbox_available":true}')
+            d1 = SimpleNamespace(reads={}, unmeasured=set(), probe=lambda: "123", listings=lambda *_: {},
+                                 rows=lambda _, label: [] if label.endswith("removals") else [{"enabled": 1}],
+                                 revision=lambda: "live", execute=Mock())
+            sources = str(daily.ROOT / "scripts/publications")
+            with patch.object(sys, "path", [sources, *sys.path]), \
+                    patch.object(daily, "datetime") as clock, patch.object(daily, "live_checks"), \
+                    patch.object(daily, "refresh_projects", return_value=({}, 0)), \
+                    patch.object(daily, "discover_projects", return_value=({}, 0)), \
+                    patch("sizing.Source.query", side_effect=search) as query, \
+                    patch.object(daily, "prepare_load") as load, patch.object(daily, "report"):
+                clock.now.return_value = day
+                self.assertEqual(daily.run(state, d1, plan=False, scheduled=True), 1)
+            self.assertGreater(query.call_count, 1)
+            load.assert_not_called()
+            d1.execute.assert_not_called()
+            self.assertFalse((state / "pending.json").exists())
+            self.assertEqual(json.loads(cursor.read_text())["loaded_through"], "2026-11-24")
+            receipt = json.loads(next((state / "runs").glob("*/receipt.json")).read_text())
+            self.assertEqual((receipt["outcome"], receipt["error"]),
+                             ("failed", "Europe PMC (EuropePmcCoverageError)"))
+
     def test_next_scheduled_window_stops_before_load_on_future_date(self):
         day = datetime(2026, 11, 26, 3, 10, tzinfo=daily.NY)
         bad = {"publication": {"sample": {"published": "2027-01"}}}

@@ -19,9 +19,14 @@ descriptions still update. GitHub's missing and unrecognized licenses stay empty
 
 The runner checks staged dates before it prepares the import. An invalid or
 future date stops the load. Source-reported year or month precision is retained.
-Europe PMC retries transiently failed institution searches once, reusing verified
-pages from the same run. If overlapping searches return different metadata,
-an exact accession lookup must confirm the identity and index date.
+Europe PMC shares a three-minute cooldown across the collection after a
+temporary failure. One request probes for recovery. If it fails, the next
+cooldown is six minutes. The runner honors a longer `Retry-After` within six
+minutes and stops if the provider asks for more time. It reuses verified pages
+from the same run. Each request gets at most three attempts, and the runner
+blocks the import whenever it cannot verify complete coverage. If overlapping
+searches return different metadata, an exact accession lookup must confirm the
+identity and index date.
 
 The inbox query reads the record ID, type and link. It does not select emails,
 messages or the reader's connection text. GitHub URLs must resolve to a public

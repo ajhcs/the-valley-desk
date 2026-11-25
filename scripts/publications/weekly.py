@@ -9,13 +9,12 @@ import json
 import os
 from pathlib import Path
 import re
-import time
 
 from collect import EuropePmcCoverageError, add_observation, deduplicate, doi, epmc_ids, europepmc_rows
 from enrich import crossref_lookup
 from institutions import load_reference, REFERENCE
 from mechanical import MechanicalProjector, identity_tokens
-from receipts import MetadataError, Receipts
+from receipts import Receipts
 from sizing import EPMC_CORPUS, Source, epmc_query
 from validate import CONTENT, DATASET, REMOVALS, validate_records
 from weekly_topics import model_topics, source_topic
@@ -60,25 +59,13 @@ def epmc_window(source, institution, start, stop):
 
 def collect(private, start, stop):
     receipts = Receipts(private)
-    source = Source("europepmc", receipts, True)
+    source = Source("europepmc", receipts, True, shared_backoff=True)
     institutions = load_reference(REFERENCE)
     shards = {}
-    retry = []
     with ThreadPoolExecutor(max_workers=5) as pool:
         futures = [(ref, pool.submit(epmc_window, source, ref, start, stop)) for ref in institutions]
         for ref, future in futures:
-            try:
-                shards[ref["id"]] = future.result()
-            except MetadataError as error:
-                if error.status not in (None, 500, 502, 503, 504):
-                    raise
-                retry.append(ref)
-    if retry:
-        # Successful pages remain available for replay. Retry failed shards once,
-        # after the first pass has completed and the provider has had time to recover.
-        time.sleep(20)
-        for ref in retry:
-            shards[ref["id"]] = epmc_window(source, ref, start, stop)
+            shards[ref["id"]] = future.result()
 
     overlaps = {}
     for ref in institutions:
