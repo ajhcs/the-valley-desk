@@ -1,6 +1,6 @@
 """Collect one completed Europe PMC index window and prepare a spot-checkable public delta."""
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, timedelta
 import hashlib
@@ -103,9 +103,15 @@ def files():
     return [DATASET, *sorted(CONTENT.glob("public-directory-publications-[0-9][0-9][0-9][0-9].jsonl"))]
 
 
-def link_versions(records, crossref):
-    indexed = {row["doi"]: row for row in records if row.get("doi")}
-    candidates = set()
+def link_versions(records, crossref, *, existing=(), excluded=frozenset()):
+    all_records = [*existing, *records]
+    indexed = {row["doi"]: row for row in all_records if row.get("doi") and row["id"] not in excluded}
+    partners = defaultdict(set)
+    for row in all_records:
+        if partner := row.get("published_as") or row.get("preprint_of"):
+            partners[row["id"]].add(partner)
+            partners[partner].add(row["id"])
+    candidates = {}
     for source, record in crossref.items():
         if source not in indexed:
             continue
@@ -116,12 +122,20 @@ def link_versions(records, crossref):
                     continue
                 pair = (source, related) if field == "is-preprint-of" else (related, source)
                 if indexed[pair[0]]["type"] == "preprint" and indexed[pair[1]]["type"] != "preprint":
-                    candidates.add(pair)
-    hits = Counter(key for pair in candidates for key in pair)
-    for a, b in candidates:
-        if hits[a] == hits[b] == 1:
-            indexed[a]["published_as"] = indexed[b]["id"]
-            indexed[b]["preprint_of"] = indexed[a]["id"]
+                    preprint, journal = (indexed[key]["id"] for key in pair)
+                    candidates[(preprint, journal)] = tuple(indexed[key] for key in pair)
+                    partners[preprint].add(journal)
+                    partners[journal].add(preprint)
+    added = {row["id"] for row in records}
+    updates = {}
+    for (preprint, journal), (draft, article) in candidates.items():
+        if partners[preprint] == {journal} and partners[journal] == {preprint}:
+            for row, field, target in ((draft, "published_as", journal), (article, "preprint_of", preprint)):
+                if row.get(field) == target:
+                    continue
+                changed = row if row["id"] in added else updates.setdefault(row["id"], dict(row))
+                changed[field] = target
+    return list(updates.values())
 
 
 def prepare(args):

@@ -549,6 +549,22 @@ def run(state, d1, *, plan, scheduled):
         completed_today = datetime.now(NY).date().isoformat() == receipt["day"]
         nightly = scheduled and receipt["scheduled"] and completed_today
         if nightly:
+            if (state / "discovery-sources.json").is_file():
+                end = date.fromisoformat(receipt["loaded_through"])
+                try:
+                    from daily_discovery import run_scheduled
+                    removed = {row["id"] for row in d1.rows(REMOVALS["publication"], "publication review removals")}
+                    receipt["supplemental_discovery"] = run_scheduled(state, run_dir, end, records["publication"],
+                                                                     removed, receipt["day"])
+                except Exception as error:
+                    receipt["supplemental_discovery"] = {"status": "failed", "error": type(error).__name__}
+                try:
+                    from daily_discovery import run_github_review
+                    removed = {row["id"] for row in d1.rows(REMOVALS["project"], "GitHub review removals")}
+                    receipt["github_push_review"] = run_github_review(state, run_dir, end, records["project"],
+                                                                     removed, receipt["day"])
+                except Exception as error:
+                    receipt["github_push_review"] = {"status": "failed", "error": type(error).__name__}
             receipt["stage"] = "weekly timer retirement"
             retire_weekly(state, receipt)
         if receipt.get("dataset_through"):

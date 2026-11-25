@@ -16,6 +16,9 @@ The per-kind 5% limit counts additions, removals and changes to listing name,
 purpose, institution, county, label, topic, license, language or archive status.
 A run can remove up to 25 records per kind. Stars, pushed dates and repository
 descriptions still update. GitHub's missing and unrecognized licenses stay empty.
+Roster discovery checks creation dates for the public update. The optional
+push-date review surfaces older repositories when new work appears and keeps
+one pending candidate per GitHub repository ID.
 
 The runner checks staged dates before it prepares the import. An invalid or
 future date stops the load. Source-reported year or month precision is retained.
@@ -28,11 +31,41 @@ blocks the import whenever it cannot verify complete coverage. If overlapping
 searches return different metadata, an exact accession lookup must confirm the
 identity and index date.
 
+An explicit Crossref preprint relation can connect an existing record to an
+eligible record in a later batch. A preprint and its journal article retain
+their own dates and identifiers. Conflicting version links remain for review.
+
 The inbox query reads the record ID, type and link. It does not select emails,
 messages or the reader's connection text. GitHub URLs must resolve to a public
 repository with independently supported regional account evidence. Registry and
 publication suggestions are matched to independently qualified records. Notes
 use fixed outcomes or a public listing ID.
+
+### Supplemental discovery
+
+To enable private review after the scheduled import and readback, put
+`{"start":"YYYY-MM-DD","review_sources":["pubmed","biorxiv","medrxiv"],"review_github_pushes":true}` in
+`STATE/discovery-sources.json`, using the first completed date to cover.
+For an independent source check, run
+`python3 ops/daily_discovery.py STATE NEW_PRIVATE_OUTPUT START END` with completed
+dates. The optional `--source` flag selects particular feeds for the check.
+
+PubMed uses citation creation dates. bioRxiv and medRxiv use posting and
+revision dates and supply explicit journal links in a separate feed. Each
+source checkpoint advances only after the complete requested window and its
+review file are saved. The review groups exact DOI, PMID, PMCID and arXiv
+identifiers and flags contradictory matches. Raw source receipts and review
+files stay in private run storage. A direct preprint feed supplies the
+corresponding author's institution, so regional counts cover those affiliations.
+
+Code availability statements in up to 60 accessible PMC articles per run
+and in relevant preprint abstracts can surface GitHub links from accounts
+outside the retained roster. These links are review leads with the source
+article attached.
+The GitHub push review writes `STATE/github-push-candidates.json` after a
+complete roster scan and holds the window open if the scan fails.
+The supplemental review leaves the public import and Europe PMC checkpoint
+under their existing coverage requirements.
 
 ## BuilderBob cutover
 

@@ -186,13 +186,16 @@ def add_observation(by_key, provider, record, leads):
     by_key[key]['institutions'].update(leads)
 
 
-def deduplicate(by_key):
+def deduplicate(by_key, *, identifiers_for=None):
     """Combine exact identifiers, preserving contradictory identifiers for review."""
     index = {}
     groups = {}
     for key, obs in sorted(by_key.items()):
-        get_ids = epmc_ids if obs['provider'] == 'europepmc' else oa_ids
-        identifiers = get_ids(obs['record'])
+        if identifiers_for is None:
+            get_ids = epmc_ids if obs['provider'] == 'europepmc' else oa_ids
+            identifiers = get_ids(obs['record'])
+        else:
+            identifiers = identifiers_for(obs)
         roots = {index[i] for i in identifiers if i in index}
         root = min(roots | {key})
         group = groups.setdefault(root, {'ids': set(), 'keys': set()})
@@ -207,7 +210,7 @@ def deduplicate(by_key):
 
     for root, details in sorted(groups.items()):
         ids = sorted(details['ids'], key=lambda identifier: (
-            ('doi', 'pmid', 'arxiv').index(identifier.split(':', 1)[0]), identifier))
+            ('doi', 'pmid', 'arxiv', 'pmcid').index(identifier.split(':', 1)[0]), identifier))
         institutions = set()
         observations = []
         for key in sorted(details['keys']):
