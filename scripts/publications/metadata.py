@@ -156,10 +156,10 @@ def crossref_dates(record, unassigned_issue_dates=()):
     return [*values.values(), *([history['published']] if 'published' in history else [])]
 
 
-def earliest_at_stated_precision(values):
+def earliest_at_stated_precision(values, *, through=None):
     values = set(values)
     precise = [value for value in values if not any(other.startswith(value + '-') for other in values)]
-    return min(precise, default=None)
+    return min((value for value in precise if through is None or value <= through), default=None)
 
 
 def electronic_dates(observations):
@@ -184,10 +184,10 @@ def electronic_dates(observations):
                         yield value
 
 
-def earliest_date(observations):
+def earliest_date(observations, *, through=None):
     """Use explicit online publication dates before considering issue dates."""
     observations = tuple(observations)
-    if online := earliest_at_stated_precision(electronic_dates(observations)):
+    if online := earliest_at_stated_precision(electronic_dates(observations), through=through):
         return online
     values = set()
     confirmed = []
@@ -209,6 +209,7 @@ def earliest_date(observations):
                 values.add(explicit)
                 if obs['record'].get('publisher_confirmed_conflict'):
                     confirmed.append(explicit)
+    confirmed = [value for value in confirmed if through is None or value <= through]
     if confirmed:
         return min(confirmed)
-    return earliest_at_stated_precision(values)
+    return earliest_at_stated_precision(values, through=through)

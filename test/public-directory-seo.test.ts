@@ -87,6 +87,12 @@ test("landing pages answer in computed sentences and carry matching metadata", a
     // Only terms that the page shows appear as keywords.
     for (const term of item.mainEntity.keywords ?? []) assert.ok(publication.includes(term), term);
 
+    sqlite.prepare("UPDATE research_listings SET record=json_set(record,'$.published',NULL),activity='' WHERE id=?").run(record.id);
+    const undated = await text("/discover/publication/" + encodeURIComponent(record.id) + "?date-check=1");
+    assert.match(undated, /<meta name="citation_title" content="Retracted tissue study 3">/);
+    assert.doesNotMatch(undated, /name="citation_publication_date"/);
+    assert.equal(schemaOf(undated)[0].mainEntity.datePublished, undefined);
+
     const home = await text("/");
     const [site, catalog] = schemaOf(home);
     assert.equal(site.potentialAction.target.urlTemplate, origin + "/discover/works?q={search_term_string}");

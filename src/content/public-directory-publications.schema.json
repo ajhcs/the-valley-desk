@@ -53,9 +53,9 @@
       ]
     },
     "published": {
-      "type": "string",
+      "type": ["string", "null"],
       "pattern": "^\\d{4}(?:-(0[1-9]|1[0-2])(?:-(0[1-9]|[12]\\d|3[01]))?)?$",
-      "description": "Earliest source-reported publication date with its original precision."
+      "description": "Earliest supported publication date with its original precision, or null when it cannot be established."
     },
     "venue": {
       "anyOf": [

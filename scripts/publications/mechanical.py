@@ -327,7 +327,7 @@ class MechanicalProjector:
                 return Projection(reason="publisher-withdrawn original")
 
         exact_sources = europe + supplemental
-        published = earliest_date(exact_sources)
+        published = earliest_date(exact_sources, through=self.run_date)
         if not published:
             return Projection(reason="publication date unsupported")
 
