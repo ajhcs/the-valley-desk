@@ -104,7 +104,7 @@ def reconcile_epmc_overlap(source, origin, accession, hits):
     observed = identity(hits[0][1])
     if any(identity(record) != observed for _, record in hits[1:]):
         raise EuropePmcCoverageError("Overlapping Europe PMC hits disagree on identity or index date")
-    records = list(europepmc_rows(source, f'EXT_ID:"{accession}" AND SRC:{origin}'))
+    records = list(europepmc_rows(source, f"EXT_ID:{accession} AND SRC:{origin}"))
     if len(records) != 1 or (records[0]["source"], records[0]["id"]) != (origin, accession):
         raise EuropePmcCoverageError("Exact Europe PMC lookup did not confirm the overlap")
     if identity(records[0]) != observed:

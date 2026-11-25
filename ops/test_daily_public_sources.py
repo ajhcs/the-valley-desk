@@ -108,7 +108,7 @@ class PublicationAdapterTests(unittest.TestCase):
         self.assertEqual(attempts, {"a": 1, "b": 2})
         sleep.assert_called_once_with(20)
         lookup.assert_called_once()
-        self.assertEqual(lookup.call_args.args[1], 'EXT_ID:"123" AND SRC:MED')
+        self.assertEqual(lookup.call_args.args[1], "EXT_ID:123 AND SRC:MED")
         self.assertEqual(candidate["observations"][0]["record"], current)
         self.assertEqual(candidate["institutions"], ["a", "b"])
 
