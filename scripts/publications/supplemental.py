@@ -66,7 +66,8 @@ def jats_repositories(document, pmcid):
             heading = next((label for path in ("title", "label", "p/bold", "p/italic")
                             if (label := text(section, path))), "")
             kind = {section.get(key) for key in ("sec-type", "notes-type", "fn-type")}
-            if CODE_STATEMENT.search(heading) or "code-availability" in kind:
+            standalone_heading = re.fullmatch(r"code (?:and data )?availability:?", text(section, "p"), re.I)
+            if CODE_STATEMENT.search(heading) or "code-availability" in kind or standalone_heading:
                 for paragraph in section.findall("p"):
                     results.update(paragraph_repositories(paragraph, named_section=True))
         if container != "front":

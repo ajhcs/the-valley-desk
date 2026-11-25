@@ -95,7 +95,7 @@ class SupplementalDiscoveryTests(unittest.TestCase):
               </sec>
             </body>
             <back>
-              <fn-group><fn><p><bold>Code availability</bold></p>
+              <fn-group><fn><p>Code availability</p>
               <p>Available at github.com/AnotherLab/Repo.</p>
               </fn></fn-group>
             </back>
