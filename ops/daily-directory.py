@@ -245,12 +245,14 @@ def collect(d1, state, run_dir, day, first, last, receipt):
     removed = {kind: {row["id"] for row in d1.rows(REMOVALS[kind], f"{kind} removals")} for kind in KINDS}
     baseline = {"project": d1.listings("project")}
     deltas = {}
-    receipt["stage"] = "GitHub"
+    receipt["stage"] = "GitHub catalog refresh"
     projection, unavailable = refresh_projects(ROOT, run_dir, baseline["project"], removed["project"], day)
     receipt["github_unavailable"] = unavailable
+    receipt["github_checked"] = len(projection) - unavailable
     skipped = sum(identifier not in projection for identifier in baseline["project"])
     deltas["project"], receipt["counts"]["project"] = changes(
         baseline["project"], projection.values(), removed["project"], skipped)
+    receipt["stage"] = "GitHub discovery"
     discovered, skipped = discover_projects(ROOT, projection, removed["project"], day, first.isoformat())
     deltas["project"].update(discovered)
     receipt["counts"]["project"]["added"] += len(discovered)
@@ -508,10 +510,13 @@ def run(state, d1, *, plan, scheduled):
             save(run_dir / "receipt.json", receipt)
             if apply_load(d1, sql, receipt["revision"]):
                 receipt.setdefault("attempt_errors", []).append("Wrangler import response unavailable. D1 commit verified.")
+        receipt["stage"] = "public inventory readback"
+        records = {kind: d1.listings(kind) for kind in (*KINDS, "dataset", "regional-data")}
+        receipt["public_counts"] = {kind: len(rows) for kind, rows in records.items()}
         receipt["stage"] = "live checks"
-        receipt["http"] = live_checks(ROOT, d1.probe())
+        receipt["http"] = live_checks(ROOT, d1.probe(), records=records)
         receipt["stage"] = "snapshot"
-        receipt["snapshot"] = snapshot(ROOT, run_dir, receipt["day"], {kind: d1.listings(kind) for kind in KINDS})
+        receipt["snapshot"] = snapshot(ROOT, run_dir, receipt["day"], records)
         completed_today = datetime.now(NY).date().isoformat() == receipt["day"]
         nightly = scheduled and receipt["scheduled"] and completed_today
         if nightly:

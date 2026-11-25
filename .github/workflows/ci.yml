@@ -56,5 +56,9 @@ jobs:
           python-version: "3.12"
       - name: Private acquisition test workspace
         run: test -d /workspace/build/builderbob || sudo install -d -m 0700 -o "$USER" -g "$(id -gn)" /workspace/build/builderbob
+      - name: Daily directory refresh tests
+        run: |
+          python3 -m pip install jsonschema==4.25.1
+          python3 -B -m unittest discover -s ops -p 'test_daily*.py'
       - name: Directory and discovery tests
         run: npm run test:discovery

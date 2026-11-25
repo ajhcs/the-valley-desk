@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -13,6 +14,23 @@ spec.loader.exec_module(module)
 
 
 class RefreshTests(unittest.TestCase):
+    def test_repositories_with_commit_trees_do_not_truncate_later_batches(self):
+        previous = {str(i): {'id': str(i), 'code': f'https://github.com/owner/repo-{i}'} for i in range(1, 42)}
+        source = {'isPrivate': False, 'primaryLanguage': None, 'licenseInfo': None,
+                  'pushedAt': None, 'isArchived': False, 'stargazerCount': 5, 'description': None,
+                  'defaultBranchRef': {'target': {'oid': 'a' * 40, 'tree': {'entries': [
+                      {'name': 'README.md', 'type': 'blob'}]}}}}
+        first = {f'r{i}': {**source, 'databaseId': i + 1} for i in range(40)}
+        second = {'r0': {**source, 'databaseId': 41}}
+        responses = [types.SimpleNamespace(returncode=0, stdout=json.dumps({'data': batch}))
+                     for batch in (first, second)]
+        with tempfile.TemporaryDirectory() as directory, patch.object(module.subprocess, 'run', side_effect=responses) as gh:
+            records, skipped = module.refresh_projects('.', directory, previous, set(), '2026-11-25')
+        self.assertEqual(len(gh.call_args_list), 2)
+        self.assertIn('name:"repo-41"', gh.call_args_list[1].args[0][-1])
+        self.assertEqual(skipped, 0)
+        self.assertTrue(all(row['stars'] == 5 and row['readmeUrl'].endswith('/README.md') for row in records.values()))
+
     def test_refresh_replaces_changed_values_and_preserves_purpose(self):
         original = {'id': '123', 'code': 'https://github.com/owner/repo', 'purpose': 'Editorial description', 'stars': 1}
         source = {'databaseId': 123, 'isPrivate': False, 'primaryLanguage': None, 'licenseInfo': None, 'pushedAt': '2026-11-23T12:00:00Z',

@@ -37,9 +37,9 @@ def refresh_projects(root, run_dir, existing, removed, day):
     root, run_dir = Path(root), Path(run_dir)
     result = {str(k): dict(v) for k, v in existing.items() if str(k) not in removed}
     skipped = 0
-    entries = list(result.items())
-    for start in range(0, len(entries), 40):
-        chunk = entries[start:start + 40]
+    repositories = list(result.items())
+    for start in range(0, len(repositories), 40):
+        chunk = repositories[start:start + 40]
         queries = []
         for i, (identity, previous) in enumerate(chunk):
             match = GITHUB_RE.fullmatch(previous['code'])
@@ -74,10 +74,10 @@ def refresh_projects(root, run_dir, existing, removed, day):
             if branch is not None:
                 commit = branch.get('target') or {}
                 oid = commit.get('oid', '')
-                entries = (commit.get('tree') or {}).get('entries')
-                if not re.fullmatch(r'[0-9a-f]{40}', oid) or not isinstance(entries, list):
+                tree_entries = (commit.get('tree') or {}).get('entries')
+                if not re.fullmatch(r'[0-9a-f]{40}', oid) or not isinstance(tree_entries, list):
                     raise RuntimeError('GitHub returned incomplete default branch tree')
-                files = {e['name'] for e in entries if e.get('type') == 'blob' and isinstance(e.get('name'), str)}
+                files = {e['name'] for e in tree_entries if e.get('type') == 'blob' and isinstance(e.get('name'), str)}
                 # Restrict to recognized root README names; don't infer absent files or branches.
                 readmes = sorted((n for n in files if re.fullmatch(r'README(?:\.(?:md|markdown|rst|txt))?', n, re.I)), key=lambda n: (n.lower() != 'readme.md', n.lower(), n))
                 base = previous['code'] + '/blob/' + oid + '/'
