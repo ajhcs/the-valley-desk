@@ -94,9 +94,15 @@ class SupplementalDiscoveryTests(unittest.TestCase):
                 <p><ext-link xlink:href="https://github.com/TheLab/Repo/tree/main">code</ext-link></p>
               </sec>
             </body>
+            <back>
+              <fn-group><fn><p><bold>Code availability</bold></p>
+              <p>Available at github.com/AnotherLab/Repo.</p>
+              </fn></fn-group>
+            </back>
           </article>
         """)
-        self.assertEqual(supplemental.jats_repositories(xml, "PMC777"), ["https://github.com/thelab/repo"])
+        self.assertEqual(supplemental.jats_repositories(xml, "PMC777"),
+                         ["https://github.com/anotherlab/repo", "https://github.com/thelab/repo"])
         with self.assertRaisesRegex(supplemental.CoverageError, "requested PMCID"):
             supplemental.jats_repositories(xml, "PMC888")
 

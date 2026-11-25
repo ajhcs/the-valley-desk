@@ -13,10 +13,13 @@ from metadata import iso_precision, issue_date
 PROVIDERS = ("pubmed", "biorxiv", "medrxiv")
 PUBMED_MAX = 10_000
 PREPRINT_PAGE = 30
-GITHUB_LINK = re.compile(r"""https?://github\.com/([A-Za-z0-9-]+)/([A-Za-z0-9_.-]+)(?=$|[/?#\s)>;,'"])""", re.I)
+GITHUB_LINK = re.compile(
+    r"""(?<![A-Za-z0-9.@/-])(?:https?://)?(?:www\.)?github\.com/([A-Za-z0-9-]+)/"""
+    r"""([A-Za-z0-9_.-]+)(?=$|[/?#\s)>;,'"])""", re.I)
 CODE_STATEMENT = re.compile(
     r"\b(?:code availability|(?:source |analysis )?code (?:and data )?(?:for (?:this|the) (?:study|work) )?"
-    r"(?:is |are |was )?(?:publicly )?(?:available|released|provided)|we (?:provide|release) (?:the|our) code)\b", re.I)
+    r"(?:is |are |was )?(?:publicly )?(?:available|released|provided)|we (?:provide|release) (?:the|our) code"
+    r"|code\b[^.!?]{0,100}\b(?:is|are|was) (?:publicly |freely )?available)\b", re.I)
 
 
 class CoverageError(RuntimeError):
@@ -53,17 +56,22 @@ def jats_repositories(document, pmcid):
     if ids != {pmcid}:
         raise CoverageError("Full-text document did not confirm the requested PMCID")
     results = set()
-    for container in ("body", "back"):
+    for container in ("front", "body", "back"):
         root = document.find(container)
         if root is None:
             continue
-        for section in root.iter("sec"):
-            title = text(section, "title")
-            if CODE_STATEMENT.search(title) or section.get("sec-type") == "code-availability":
+        for section in root.iter():
+            if section.tag not in {"sec", "notes", "fn"}:
+                continue
+            heading = next((label for path in ("title", "label", "p/bold", "p/italic")
+                            if (label := text(section, path))), "")
+            kind = {section.get(key) for key in ("sec-type", "notes-type", "fn-type")}
+            if CODE_STATEMENT.search(heading) or "code-availability" in kind:
                 for paragraph in section.findall("p"):
                     results.update(paragraph_repositories(paragraph, named_section=True))
-        for paragraph in root.iter("p"):
-            results.update(paragraph_repositories(paragraph))
+        if container != "front":
+            for paragraph in root.iter("p"):
+                results.update(paragraph_repositories(paragraph))
     return sorted(results)
 
 
