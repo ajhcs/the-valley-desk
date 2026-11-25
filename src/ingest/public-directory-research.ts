@@ -74,7 +74,7 @@ export type Publication = {
   title: string;
   type: string;
   venue: string | null;
-  published: string;
+  published: string | null;
   doi?: string | null;
   pmid?: string | null;
   pmcid?: string | null;

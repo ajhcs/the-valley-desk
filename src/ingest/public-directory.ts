@@ -294,7 +294,7 @@ function citationMeta(p: Publication) {
   return (
     tag("citation_title", publicationTitle(p)) +
     p.authors.map((a) => tag("citation_author", a.name)).join("") +
-    tag("citation_publication_date", highwireDate(p.published)) +
+    tag("citation_publication_date", p.published ? highwireDate(p.published) : null) +
     tag(p.type === "preprint" ? "citation_publisher" : "citation_journal_title", p.venue) +
     tag("citation_doi", p.doi) +
     tag("citation_pmid", p.pmid) +
@@ -329,7 +329,7 @@ function publicationSchema(p: Publication, origin: string) {
       headline: displayTitle(p).slice(0, 110),
       name: displayTitle(p),
       genre: publicationType(p.type),
-      datePublished: p.published,
+      ...(p.published ? { datePublished: p.published } : {}),
       author: p.authors.map((a) => ({ "@type": "Person", name: a.name })),
       ...(p.venue ? { isPartOf: { "@type": p.type === "preprint" ? "Organization" : "Periodical", name: p.venue } } : {}),
       ...(ids.length ? { identifier: ids } : {}),

@@ -252,7 +252,7 @@ def build_record(candidate, review, institutions, projects, previous, today):
                  or any(item['record'].get('is_retracted') is True for item in candidate['observations']))
     return {
         'id': pid, 'title': plain(title_of(provider, source)), 'type': review['type'],
-        'published': earliest_date(candidate['observations']),
+        'published': earliest_date(candidate['observations'], through=today),
         'venue': plain(source.get('venue') if provider == 'publisher' else
                        journal(source) if provider == 'europepmc' else crossref_venue(source)),
         'doi': id_values.get('doi'), 'pmid': next(iter(pubmed_ids), None),

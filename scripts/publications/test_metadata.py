@@ -43,6 +43,29 @@ class PublicationMetadataTest(unittest.TestCase):
         ]
         self.assertEqual(earliest_date(observations), '2026-03-07')
 
+    def test_future_online_date_does_not_override_historical_evidence(self):
+        observations = [{'provider': 'crossref', 'record': {
+            'published-online': {'date-parts': [[2027, 1, 23]]},
+            'published-print': {'date-parts': [[2026, 11, 2]]},
+            'issued': {'date-parts': [[2026, 11]]},
+        }}]
+        self.assertEqual(earliest_date(observations, through='2026-11-25'), '2026-11-02')
+
+    def test_future_issue_cannot_supply_a_completed_publication_date(self):
+        observations = [{'provider': 'europepmc', 'record': {
+            'publicationStatus': 'ppublish', 'firstPublicationDate': '2026-12-01',
+            'journalInfo': {'dateOfPublication': '2026 Dec'},
+        }}]
+        self.assertIsNone(earliest_date(observations, through='2026-11-25'))
+
+    def test_future_day_is_not_replaced_by_year_of_same_issue(self):
+        observations = [{'provider': 'crossref', 'record': {
+            'published-online': {'date-parts': [[2026, 12, 1]]},
+            'published-print': {'date-parts': [[2026, 12, 1]]},
+            'issued': {'date-parts': [[2026]]},
+        }}]
+        self.assertIsNone(earliest_date(observations, through='2026-11-25'))
+
     def test_issue_date_keeps_stated_day_without_online_evidence(self):
         observations = [{'provider': 'europepmc', 'record': {
             'journalInfo': {'dateOfPublication': '2026 Mar 7'},

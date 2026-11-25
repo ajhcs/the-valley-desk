@@ -117,10 +117,11 @@ def validate_record(row, institutions, projects, claimed_identifiers):
         if unquote(row['url']) != 'https://doi.org/' + row['doi']:
             raise ValueError('DOI resolver disagrees with DOI')
     published = row['published']
-    if len(published) == 10:
-        date.fromisoformat(published)
-    elif int(published[:4]) < 1:
-        raise ValueError('invalid publication year')
+    if published is not None:
+        if len(published) == 10:
+            date.fromisoformat(published)
+        elif int(published[:4]) < 1:
+            raise ValueError('invalid publication year')
     if row['checked'] < row['added']:
         raise ValueError('checked date precedes added date')
     visible = len(row['authors'])
