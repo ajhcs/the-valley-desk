@@ -15,6 +15,27 @@ spec.loader.exec_module(module)
 
 
 class RefreshTests(unittest.TestCase):
+    def test_discovery_rechecks_older_pushed_repositories_and_deduplicates_both_searches(self):
+        def candidate(identity, created, pushed):
+            return {"id": identity, "created_at": created, "pushed_at": pushed,
+                    "html_url": f"https://github.com/owner/repo-{identity}"}
+
+        new = candidate(1, "2026-11-23", "2026-11-23")
+        active = candidate(2, "2026-08-01", "2026-11-23")
+        removed = candidate(3, "2026-11-23", "2026-11-23")
+        old = candidate(4, "2026-08-01", "2026-08-01")
+        rejected = candidate(5, "2026-11-23", "2026-11-23")
+        pages = [[new, removed, rejected, old], [new, removed, rejected, active, old]]
+        with patch.object(module, "roster_from_public", return_value={"owner": {"login": "owner"}}), \
+                patch.object(module, "_github", side_effect=pages) as github, \
+                patch.object(module, "qualify_repository", side_effect=[({"id": "1"}, None), (None, "ineligible"),
+                                                                      ({"id": "2"}, None)]) as qualify:
+            rows, skipped = module.discover_projects(".", {}, {"3"}, "2026-11-25", "2026-11-22")
+        self.assertEqual((set(rows), skipped), ({"1", "2"}, 1))
+        self.assertEqual([call.kwargs["source"]["id"] for call in qualify.call_args_list], [1, 5, 2])
+        self.assertEqual([url.args[0].split("sort=")[1].split("&")[0] for url in github.call_args_list],
+                         ["created", "pushed"])
+
     def test_repositories_with_commit_trees_do_not_truncate_later_batches(self):
         previous = {str(i): {'id': str(i), 'code': f'https://github.com/owner/repo-{i}'} for i in range(1, 42)}
         source = {'isPrivate': False, 'primaryLanguage': None, 'licenseInfo': None,
@@ -200,6 +221,25 @@ class PublicationAdapterTests(unittest.TestCase):
         self.assertEqual(lookup.call_args.args[1], "EXT_ID:123 AND SRC:MED")
         self.assertEqual(candidate["observations"][0]["record"], current)
         self.assertEqual(candidate["institutions"], ["a", "b"])
+
+    def test_preprint_link_can_join_a_later_journal_batch_without_mutating_catalog(self):
+        a, b = "10.1000/preprint", "10.1000/journal"
+        preprint = {"id": "doi:" + a, "doi": a, "type": "preprint", "added": "2026-01-01"}
+        journal = {"id": "doi:" + b, "doi": b, "type": "article"}
+        relation = {b: {"relation": {"has-preprint": [{"id-type": "doi", "id": a}]}}}
+        updates = self.weekly.link_versions([journal], relation, existing=[preprint])
+        self.assertNotIn("published_as", preprint)
+        self.assertEqual(updates, [{**preprint, "published_as": journal["id"]}])
+        self.assertEqual(journal["preprint_of"], preprint["id"])
+
+    def test_preprint_link_keeps_an_existing_conflicting_version_link(self):
+        a, b, c = "10.1000/preprint", "10.1000/journal", "10.1000/new-journal"
+        arow = {"id": "doi:" + a, "doi": a, "type": "preprint"}
+        brow = {"id": "doi:" + b, "doi": b, "type": "article", "preprint_of": arow["id"]}
+        crow = {"id": "doi:" + c, "doi": c, "type": "article"}
+        relation = {c: {"relation": {"has-preprint": [{"id-type": "doi", "id": a}]}}}
+        self.assertEqual(self.weekly.link_versions([crow], relation, existing=[arow, brow]), [])
+        self.assertNotIn("preprint_of", crow)
 
     def test_overlap_rejects_changed_publication_identity(self):
         old = {"source": "MED", "id": "123", "doi": "10.9999/old", "firstIndexDate": "2026-11-25"}

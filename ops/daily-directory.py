@@ -549,6 +549,15 @@ def run(state, d1, *, plan, scheduled):
         completed_today = datetime.now(NY).date().isoformat() == receipt["day"]
         nightly = scheduled and receipt["scheduled"] and completed_today
         if nightly:
+            if (state / "discovery-sources.json").is_file():
+                try:
+                    from daily_discovery import run_scheduled
+                    removed = {row["id"] for row in d1.rows(REMOVALS["publication"], "publication review removals")}
+                    receipt["supplemental_discovery"] = run_scheduled(
+                        state, run_dir, date.fromisoformat(receipt["loaded_through"]),
+                        records["publication"], removed, receipt["day"])
+                except Exception as error:
+                    receipt["supplemental_discovery"] = {"status": "failed", "error": type(error).__name__}
             receipt["stage"] = "weekly timer retirement"
             retire_weekly(state, receipt)
         if receipt.get("dataset_through"):

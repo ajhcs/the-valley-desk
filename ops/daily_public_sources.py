@@ -90,31 +90,35 @@ def refresh_projects(root, run_dir, existing, removed, day):
 
 
 def discover_projects(root, existing, removed, day, since):
-    """Enumerate newly created public repositories on the existing regional account rosters."""
+    """Revisit recently created and recently pushed public repositories on each roster."""
     result, skipped = {}, 0
     for association in roster_from_public(existing, root).values():
-        for page in range(1, 101):
-            try:
-                repositories = _github('/users/' + association['login'] +
-                                       '/repos?type=owner&sort=created&direction=desc&per_page=100&page=' + str(page))
-            except HTTPError as error:
-                if error.code != 404:
-                    raise
-                skipped += 1
-                break
-            for candidate in repositories:
-                identity = str(candidate['id'])
-                if candidate['created_at'][:10] < since or identity in existing or identity in result or identity in removed:
-                    continue
-                row, _ = qualify_repository(candidate['html_url'], root, day, association, source=candidate)
-                if row:
-                    result[identity] = row
-                else:
+        checked = set()
+        for sort in ('created', 'pushed'):
+            for page in range(1, 101):
+                try:
+                    repositories = _github('/users/' + association['login'] + '/repos?' +
+                                           f'type=owner&sort={sort}&direction=desc&per_page=100&page={page}')
+                except HTTPError as error:
+                    if error.code != 404:
+                        raise
                     skipped += 1
-            if len(repositories) < 100 or repositories[-1]['created_at'][:10] < since:
-                break
-        else:
-            raise RuntimeError('GitHub roster pagination exceeded limit')
+                    break
+                for candidate in repositories:
+                    identity = str(candidate['id'])
+                    if ((candidate[sort + '_at'] or '')[:10] < since or identity in existing
+                            or identity in checked or identity in result or identity in removed):
+                        continue
+                    checked.add(identity)
+                    row, _ = qualify_repository(candidate['html_url'], root, day, association, source=candidate)
+                    if row:
+                        result[identity] = row
+                    else:
+                        skipped += 1
+                if len(repositories) < 100 or (repositories[-1][sort + '_at'] or '')[:10] < since:
+                    break
+            else:
+                raise RuntimeError('GitHub roster pagination exceeded limit')
     return result, skipped
 
 
@@ -198,11 +202,13 @@ def collect_publications(root, state, run_dir, existing, removed, first=None, la
     if suggestions:
         skipped += sum(row["topic"] == "Other science" for row in accepted)
         accepted = [row for row in accepted if row["topic"] != "Other science"]
-    link_versions(accepted, crossref)
     if accepted and sum(row['topic'] == 'Other science' for row in accepted) * 100 > len(accepted) * 12:
         raise ValueError('Other science exceeds 12%')
+    prior = () if suggestions else existing.values()
+    excluded = {row["id"] for row in prior if holds.intersection(identity_tokens(row))}
+    accepted.extend(link_versions(accepted, crossref, existing=prior, excluded=excluded))
     validation_file = run_dir / 'publications-validation.jsonl'
-    rows = sorted([*existing.values(), *accepted], key=lambda row: row['id'])
+    rows = sorted((existing | {row['id']: row for row in accepted}).values(), key=lambda row: row['id'])
     validation_file.write_text(''.join(json.dumps(row, ensure_ascii=False, sort_keys=True) + '\n' for row in rows))
     validate_records(validation_file)
     return accepted, skipped
@@ -269,6 +275,7 @@ def qualify_repository(project_url, root, day, association=None, *, source=None)
            'label': 'Listed', 'added': day, 'owner': association['owner'],
            'institution': association['institution'], 'connection': association['connection'],
            'source': association['source'], 'language': source.get('language'),
+           'created': (source.get('created_at') or '')[:10] or None,
            'license': github_license(source.get('license')), 'pushed': (source.get('pushed_at') or '')[:10] or None,
            'archived': source['archived'], 'stars': source['stargazers_count'], 'description': source.get('description')}
     # The REST README endpoint returns the actual preferred file URL.

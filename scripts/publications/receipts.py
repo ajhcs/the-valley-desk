@@ -14,6 +14,9 @@ SERVICES = {
     'crossref': 'https://api.crossref.org',
     'openalex': 'https://api.openalex.org',
     'europepmc': 'https://www.ebi.ac.uk/europepmc/webservices/rest',
+    'pubmed': 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils',
+    'biorxiv': 'https://api.biorxiv.org',
+    'medrxiv': 'https://api.biorxiv.org',
 }
 MAX_RESPONSE_BYTES = 32 * 1024 * 1024
 USER_AGENT = 'Regional-Scholarly-Metadata/1.0'
@@ -49,7 +52,7 @@ class Receipts:
         directory = self.root / service / hashlib.sha256(url.encode()).hexdigest()
         return url, directory
 
-    def replay(self, service, endpoint, params):
+    def replay(self, service, endpoint, params, *, decode=json.loads):
         _, directory = self.request_target(service, endpoint, params)
         current = directory / 'current.json'
         if current.exists():
@@ -58,28 +61,29 @@ class Receipts:
                 data = (directory / receipt['body']).read_bytes()
                 if hashlib.sha256(data).hexdigest() != receipt['sha256']:
                     raise ValueError(f'body digest differs from receipt in {directory.name}')
-                return json.loads(data)
+                return decode(data)
         return None
 
-    def get(self, service, endpoint, params, *, replay=False, attempts=3):
-        if replay and (cached := self.replay(service, endpoint, params)) is not None:
+    def get(self, service, endpoint, params, *, replay=False, attempts=3,
+            decode=json.loads, accept='application/json'):
+        if replay and (cached := self.replay(service, endpoint, params, decode=decode)) is not None:
             return cached
         url, directory = self.request_target(service, endpoint, params)
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
         for attempt in range(attempts):
-            result, receipt = self._request(directory, url)
+            result, receipt = self._request(directory, url, accept)
             if receipt['status'] == 200 and not receipt['error']:
-                return json.loads(result)
+                return decode(result)
             status = receipt['status']
             if status in (401, 403, 429) or (status is not None and status < 500) or attempt == attempts - 1:
                 raise MetadataError(service, directory.name, status, receipt['retry_after'],
                                     transport=receipt['transport_error'])
             time.sleep(2 ** attempt)
 
-    def _request(self, directory, url):
+    def _request(self, directory, url, accept):
         requested = datetime.now(timezone.utc)
         stamp = requested.strftime('%Y%m%dT%H%M%S%f')
-        request = Request(url, headers={'User-Agent': USER_AGENT, 'Accept': 'application/json'})
+        request = Request(url, headers={'User-Agent': USER_AGENT, 'Accept': accept})
         status = None
         headers = {}
         data = b''
