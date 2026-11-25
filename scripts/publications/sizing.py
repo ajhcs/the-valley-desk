@@ -3,9 +3,10 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 import csv
 from datetime import date
+from email.utils import parsedate_to_datetime
 import json
 from pathlib import Path
-from threading import Lock
+from threading import Condition, Lock
 import time
 
 from institutions import load_reference
@@ -16,22 +17,107 @@ DOMAINS = 'primary_topic.domain.id:1|4'
 EPMC_CORPUS = '(SRC:MED OR SRC:PMC OR SRC:PPR)'
 HEADERS = ('id', 'name', 'counties', 'provider', 'scope', *map(str, YEARS),
            'preprints', 'pmids', 'open_access', 'types', 'failure')
+EPMC_INTERVAL = 0.75
+EPMC_COOLDOWNS = (180, 360)
+
+
+def retry_after_seconds(value):
+    if not value:
+        return 0
+    try:
+        value = value.strip()
+        if value.isascii() and value.isdecimal():
+            return int(value)
+        return max(0, parsedate_to_datetime(value).timestamp() - time.time())
+    except (TypeError, ValueError, OverflowError):
+        return 0
+
+
+class EuropePmcBackoff:
+    """Pace every HTTP attempt and allow one probe after a shared cooldown."""
+    def __init__(self):
+        self.condition = Condition()
+        self.next_request = 0
+        self.resume_at = None
+        self.generation = 0
+        self.cooldowns = 0
+        self.probing = False
+        self.failure = None
+
+    def acquire(self):
+        with self.condition:
+            while self.failure is None:
+                if self.probing:
+                    self.condition.wait()
+                    continue
+                now = time.monotonic()
+                delay = max(self.next_request, self.resume_at or 0) - now
+                if delay > 0:
+                    self.condition.wait(delay)
+                    continue
+                self.probing = self.resume_at is not None
+                self.next_request = now + EPMC_INTERVAL
+                return self.generation
+            raise self.failure
+
+    def finish(self, generation, error=None, *, exhausted=False):
+        with self.condition:
+            if self.failure is not None:
+                return False
+            if error is None:
+                if generation == self.generation and self.probing:
+                    self.resume_at = None
+                    self.probing = False
+                    self.cooldowns = 0
+            elif (exhausted or not isinstance(error, MetadataError)
+                  or not (error.status in (None, 429, 500, 502, 503, 504)
+                          or (error.status == 200 and error.transport))):
+                self.failure = error
+            else:
+                hinted = retry_after_seconds(error.retry_after)
+                if hinted > EPMC_COOLDOWNS[-1] or (
+                        generation == self.generation and self.cooldowns == len(EPMC_COOLDOWNS)):
+                    self.failure = error
+                elif generation == self.generation:
+                    delay = max(EPMC_COOLDOWNS[self.cooldowns], hinted)
+                    self.resume_at = time.monotonic() + delay
+                    self.generation += 1
+                    self.cooldowns += 1
+                    self.probing = False
+                elif hinted and self.resume_at is not None and not self.probing:
+                    self.resume_at = max(self.resume_at, time.monotonic() + hinted)
+            self.condition.notify_all()
+            return self.failure is None
 
 
 class Source:
-    def __init__(self, service, receipts, replay):
+    def __init__(self, service, receipts, replay, *, shared_backoff=False):
         self.service = service
         self.receipts = receipts
         self.replay = replay
         self.lock = Lock()
         self.next_request = 0
+        self.backoff = EuropePmcBackoff() if shared_backoff else None
 
     def query(self, endpoint, **params):
         if self.replay and (cached := self.receipts.replay(self.service, endpoint, params)) is not None:
             return cached
+        if self.backoff is not None:
+            attempt = 0
+            while True:
+                generation = self.backoff.acquire()
+                try:
+                    result = self.receipts.get(self.service, endpoint, params, attempts=1)
+                except Exception as error:
+                    attempt += 1
+                    if not self.backoff.finish(generation, error, exhausted=attempt > len(EPMC_COOLDOWNS)):
+                        raise
+                else:
+                    self.backoff.finish(generation)
+                    return result
         with self.lock:
             time.sleep(max(0, self.next_request - time.monotonic()))
-            self.next_request = time.monotonic() + (1.05 if self.service == 'openalex' else 0.75)
+            self.next_request = time.monotonic() + (1.05 if self.service == 'openalex' else EPMC_INTERVAL)
         return self.receipts.get(self.service, endpoint, params)
 
 

@@ -1,6 +1,7 @@
 """Retain successful and failed metadata responses in a private run directory."""
 from datetime import datetime, timezone
 import hashlib
+from http.client import IncompleteRead
 import json
 import os
 from pathlib import Path
@@ -24,10 +25,11 @@ class NoRedirect(HTTPRedirectHandler):
 
 
 class MetadataError(RuntimeError):
-    def __init__(self, service, receipt, status, retry_after=None):
+    def __init__(self, service, receipt, status, retry_after=None, *, transport=False):
         super().__init__(f'{service}: HTTP {status}, receipt {receipt}')
         self.status = status
         self.retry_after = retry_after
+        self.transport = transport
 
 
 class Receipts:
@@ -59,18 +61,19 @@ class Receipts:
                 return json.loads(data)
         return None
 
-    def get(self, service, endpoint, params, *, replay=False):
+    def get(self, service, endpoint, params, *, replay=False, attempts=3):
         if replay and (cached := self.replay(service, endpoint, params)) is not None:
             return cached
         url, directory = self.request_target(service, endpoint, params)
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
-        for attempt in range(3):
+        for attempt in range(attempts):
             result, receipt = self._request(directory, url)
             if receipt['status'] == 200 and not receipt['error']:
                 return json.loads(result)
             status = receipt['status']
-            if status in (401, 403, 429) or (status is not None and status < 500) or attempt == 2:
-                raise MetadataError(service, directory.name, status, receipt['retry_after'])
+            if status in (401, 403, 429) or (status is not None and status < 500) or attempt == attempts - 1:
+                raise MetadataError(service, directory.name, status, receipt['retry_after'],
+                                    transport=receipt['transport_error'])
             time.sleep(2 ** attempt)
 
     def _request(self, directory, url):
@@ -81,6 +84,7 @@ class Receipts:
         headers = {}
         data = b''
         error = None
+        transport_error = False
         try:
             try:
                 response = self.opener.open(request, timeout=45)
@@ -92,12 +96,14 @@ class Receipts:
                 data = response.read(MAX_RESPONSE_BYTES + 1)
                 if len(data) > MAX_RESPONSE_BYTES:
                     error = 'response exceeded byte limit'
-        except (URLError, TimeoutError, OSError) as exc:
+        except (URLError, OSError, IncompleteRead) as exc:
             error = str(exc)
+            transport_error = True
         body_name = stamp + '.body'
         (directory / body_name).write_bytes(data)
         receipt = {
             'url': url, 'fetched': requested.isoformat(), 'status': status, 'error': error,
+            'transport_error': transport_error,
             'body': body_name, 'sha256': hashlib.sha256(data).hexdigest(),
             'retry_after': next((v for k, v in headers.items() if k.lower() == 'retry-after'), None),
             'headers': headers,

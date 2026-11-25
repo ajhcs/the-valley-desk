@@ -1,6 +1,5 @@
 import importlib.util
 import json
-from collections import Counter
 from datetime import date
 from pathlib import Path
 import tempfile
@@ -8,7 +7,7 @@ import unittest
 import sys
 import types
 from zipfile import ZipFile
-from unittest.mock import patch
+from unittest.mock import Mock, call, patch
 
 spec = importlib.util.spec_from_file_location('daily_public_sources', Path(__file__).with_name('daily_public_sources.py'))
 module = importlib.util.module_from_spec(spec)
@@ -77,36 +76,126 @@ class RefreshTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 module.refresh_projects('.', directory, {'123': {'code': 'https://github.com/owner/repo'}}, set(), '2026-11-23')
 
+class BackoffClock:
+    now = 1000
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        pass
+
+    def wait(self, delay):
+        self.now += delay
+
+    def notify_all(self):
+        pass
+
+
 class PublicationAdapterTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.root = Path(__file__).resolve().parents[1]
         sys.path.insert(0, str(cls.root / 'scripts/publications'))
-        import collect, enrich, weekly, weekly_topics, test_mechanical, receipts
+        import collect, enrich, weekly, weekly_topics, test_mechanical, receipts, sizing
         cls.collect, cls.enrich, cls.topics, cls.fixtures = collect, enrich, weekly_topics, test_mechanical
-        cls.weekly, cls.receipts = weekly, receipts
+        cls.weekly, cls.receipts, cls.sizing = weekly, receipts, sizing
 
-    def test_transient_shard_retries_then_conflicting_hits_resolve_once(self):
+    def test_europe_pmc_paces_retries_over_both_cooldowns(self):
+        clock = BackoffClock()
+        outcomes = iter([self.receipts.MetadataError("europepmc", "receipt", None),
+                         self.receipts.MetadataError("europepmc", "receipt", 503), {"ok": True}, {}])
+        starts = []
+
+        def request(*_, **kwargs):
+            starts.append(clock.now)
+            result = next(outcomes)
+            if isinstance(result, Exception):
+                raise result
+            return result
+
+        receipts = Mock()
+        receipts.get.side_effect = request
+        source = self.sizing.Source("europepmc", receipts, False, shared_backoff=True)
+        source.backoff.condition = clock
+        with patch.object(self.sizing.time, "monotonic", side_effect=lambda: clock.now):
+            self.assertEqual(source.query("/search", query="one"), {"ok": True})
+            self.assertEqual(source.query("/search", query="two"), {})
+        self.assertEqual(starts, [1000, 1180, 1540, 1540.75])
+        first = call("europepmc", "/search", {"query": "one"}, attempts=1)
+        self.assertEqual(receipts.get.call_args_list, [first, first, first,
+                         call("europepmc", "/search", {"query": "two"}, attempts=1)])
+
+    def test_europe_pmc_shares_cooldown_and_stops_after_failed_probes(self):
+        clock = BackoffClock()
+        backoff = self.sizing.EuropePmcBackoff()
+        backoff.condition = clock
+        error = self.receipts.MetadataError("europepmc", "receipt", 503)
+        with patch.object(self.sizing.time, "monotonic", side_effect=lambda: clock.now):
+            first = backoff.acquire()
+            second = backoff.acquire()
+            self.assertEqual(first, second)
+            self.assertEqual(clock.now, 1000.75)
+            self.assertTrue(backoff.finish(first, error))
+            clock.now += 10
+            self.assertTrue(backoff.finish(second, error))
+            probe = backoff.acquire()
+            self.assertEqual(clock.now, 1180.75)
+            self.assertTrue(backoff.probing)
+            backoff.finish(second)
+            self.assertTrue(backoff.probing)
+            self.assertTrue(backoff.finish(probe, error))
+            probe = backoff.acquire()
+            self.assertEqual(clock.now, 1540.75)
+            self.assertFalse(backoff.finish(probe, error))
+            with self.assertRaises(self.receipts.MetadataError):
+                backoff.acquire()
+
+    def test_europe_pmc_holds_other_workers_while_the_probe_is_in_flight(self):
+        clock = BackoffClock()
+        backoff = self.sizing.EuropePmcBackoff()
+        backoff.condition = clock
+        error = self.receipts.MetadataError("europepmc", "receipt", 503)
+        with patch.object(self.sizing.time, "monotonic", side_effect=lambda: clock.now):
+            backoff.finish(backoff.acquire(), error)
+            probe = backoff.acquire()
+            def release_probe(delay=None):
+                if delay is None:
+                    backoff.finish(probe)
+                else:
+                    clock.now += delay
+
+            with patch.object(clock, "wait", side_effect=release_probe) as wait:
+                self.assertEqual(backoff.acquire(), probe)
+                self.assertEqual(wait.call_args_list, [call(), call(0.75)])
+
+    def test_europe_pmc_honors_retry_after_within_the_cooldown_budget(self):
+        clock = BackoffClock()
+        backoff = self.sizing.EuropePmcBackoff()
+        backoff.condition = clock
+
+        def busy(delay):
+            return self.receipts.MetadataError("europepmc", "receipt", 429, delay)
+
+        with patch.object(self.sizing.time, "monotonic", side_effect=lambda: clock.now):
+            self.assertTrue(backoff.finish(backoff.acquire(), busy("240")))
+            probe = backoff.acquire()
+            self.assertEqual(clock.now, 1240)
+            self.assertFalse(backoff.finish(probe, busy("600")))
+
+    def test_conflicting_shard_hits_resolve_once(self):
         day = date(2026, 11, 25)
         original = {"source": "MED", "id": "123", "title": "Sample", "firstIndexDate": day.isoformat()}
         current = {**original, "pmcid": "PMC123"}
-        attempts = Counter()
 
         def search(source, ref, start, stop):
-            key = ref["id"]
-            attempts[key] += 1
-            if key == "b" and attempts[key] == 1:
-                raise self.receipts.MetadataError("europepmc", "receipt", 503)
-            return [original if key == "a" else current]
+            return [original if ref["id"] == "a" else current]
 
         with tempfile.TemporaryDirectory() as directory, \
                 patch.object(self.weekly, "load_reference", return_value=[{"id": "a"}, {"id": "b"}]), \
                 patch.object(self.weekly, "epmc_window", side_effect=search), \
-                patch.object(self.weekly.time, "sleep") as sleep, \
                 patch.object(self.weekly, "europepmc_rows", return_value=[current]) as lookup:
             candidate, = self.weekly.collect(Path(directory), day, day)
-        self.assertEqual(attempts, {"a": 1, "b": 2})
-        sleep.assert_called_once_with(20)
         lookup.assert_called_once()
         self.assertEqual(lookup.call_args.args[1], "EXT_ID:123 AND SRC:MED")
         self.assertEqual(candidate["observations"][0]["record"], current)
