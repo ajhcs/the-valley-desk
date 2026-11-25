@@ -29,10 +29,12 @@ class RefreshTests(unittest.TestCase):
         with patch.object(module, "roster_from_public", return_value={"owner": {"login": "owner"}}), \
                 patch.object(module, "_github", side_effect=pages) as github, \
                 patch.object(module, "qualify_repository", side_effect=[({"id": "1"}, None), (None, "ineligible"),
+                                                                      (None, "ineligible"),
                                                                       ({"id": "2"}, None)]) as qualify:
-            rows, skipped = module.discover_projects(".", {}, {"3"}, "2026-11-25", "2026-11-22")
-        self.assertEqual((set(rows), skipped), ({"1", "2"}, 1))
-        self.assertEqual([call.kwargs["source"]["id"] for call in qualify.call_args_list], [1, 5, 2])
+            created, _ = module.discover_projects(".", {}, {"3"}, "2026-11-25", "2026-11-22")
+            pushed, skipped = module.discover_projects(".", created, {"3"}, "2026-11-25", "2026-11-22", sort="pushed")
+        self.assertEqual((set(created), set(pushed), skipped), ({"1"}, {"2"}, 1))
+        self.assertEqual([call.kwargs["source"]["id"] for call in qualify.call_args_list], [1, 5, 5, 2])
         self.assertEqual([url.args[0].split("sort=")[1].split("&")[0] for url in github.call_args_list],
                          ["created", "pushed"])
 

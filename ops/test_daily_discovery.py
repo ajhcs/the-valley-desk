@@ -139,3 +139,17 @@ class SupplementalDiscoveryTests(unittest.TestCase):
             cursor = json.loads((state / "discovery-checkpoints/pubmed.json").read_text())
             self.assertEqual(cursor["through"], "2026-11-25")
             self.assertTrue(Path(cursor["review"]).is_file())
+
+    def test_github_push_queue_deduplicates_and_drops_published_or_removed_repositories(self):
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory)
+            (state / "discovery-sources.json").write_text(json.dumps({"start": str(DAY), "review_github_pushes": True}))
+            queue = state / "github-push-candidates.json"
+            queue.write_text(json.dumps({"1": {"id": "1"}, "2": {"id": "2"}, "3": {"id": "3"}}))
+            with patch.object(discovery, "discover_projects", return_value=({"3": {"id": "3"}, "4": {"id": "4"}}, 1)) as scan:
+                summary = discovery.run_github_review(state, state, DAY, {"1": {}}, {"2"}, "2026-11-25")
+            self.assertEqual(scan.call_args.kwargs, {"sort": "pushed"})
+            self.assertEqual(summary, {"status": "complete", "candidates": 2, "queued": 2, "skipped": 1})
+            self.assertEqual(set(json.loads(queue.read_text())), {"3", "4"})
+            cursor = json.loads((state / "discovery-checkpoints/github-pushes.json").read_text())
+            self.assertEqual(cursor["through"], str(DAY))

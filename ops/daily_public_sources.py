@@ -89,36 +89,37 @@ def refresh_projects(root, run_dir, existing, removed, day):
     return result, skipped
 
 
-def discover_projects(root, existing, removed, day, since):
-    """Revisit recently created and recently pushed public repositories on each roster."""
+def discover_projects(root, existing, removed, day, since, *, sort='created'):
+    """Search a retained regional roster by creation or push date."""
+    if sort not in ('created', 'pushed'):
+        raise ValueError('Unsupported GitHub roster ordering')
     result, skipped = {}, 0
     for association in roster_from_public(existing, root).values():
         checked = set()
-        for sort in ('created', 'pushed'):
-            for page in range(1, 101):
-                try:
-                    repositories = _github('/users/' + association['login'] + '/repos?' +
-                                           f'type=owner&sort={sort}&direction=desc&per_page=100&page={page}')
-                except HTTPError as error:
-                    if error.code != 404:
-                        raise
+        for page in range(1, 101):
+            try:
+                repositories = _github('/users/' + association['login'] + '/repos?' +
+                                       f'type=owner&sort={sort}&direction=desc&per_page=100&page={page}')
+            except HTTPError as error:
+                if error.code != 404:
+                    raise
+                skipped += 1
+                break
+            for candidate in repositories:
+                identity = str(candidate['id'])
+                if ((candidate[sort + '_at'] or '')[:10] < since or identity in existing
+                        or identity in checked or identity in result or identity in removed):
+                    continue
+                checked.add(identity)
+                row, _ = qualify_repository(candidate['html_url'], root, day, association, source=candidate)
+                if row:
+                    result[identity] = row
+                else:
                     skipped += 1
-                    break
-                for candidate in repositories:
-                    identity = str(candidate['id'])
-                    if ((candidate[sort + '_at'] or '')[:10] < since or identity in existing
-                            or identity in checked or identity in result or identity in removed):
-                        continue
-                    checked.add(identity)
-                    row, _ = qualify_repository(candidate['html_url'], root, day, association, source=candidate)
-                    if row:
-                        result[identity] = row
-                    else:
-                        skipped += 1
-                if len(repositories) < 100 or (repositories[-1][sort + '_at'] or '')[:10] < since:
-                    break
-            else:
-                raise RuntimeError('GitHub roster pagination exceeded limit')
+            if len(repositories) < 100 or (repositories[-1][sort + '_at'] or '')[:10] < since:
+                break
+        else:
+            raise RuntimeError('GitHub roster pagination exceeded limit')
     return result, skipped
 
 

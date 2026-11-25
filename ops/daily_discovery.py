@@ -10,6 +10,7 @@ from tempfile import mkdtemp
 from zoneinfo import ZoneInfo
 
 from daily_d1 import D1, REMOVALS, save
+from daily_public_sources import discover_projects
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/publications"))
@@ -138,6 +139,33 @@ def run_scheduled(state, run_dir, last, catalog, removed, added_day):
     return stage(state, output, first, last, catalog.values(),
                  holds, config["review_sources"], checkpoints=True,
                  sources=(row for row in catalog.values() if row["added"] == added_day))
+
+
+def run_github_review(state, run_dir, last, catalog, removed, added_day):
+    config = json.loads((state / "discovery-sources.json").read_text())
+    if not config.get("review_github_pushes"):
+        return {}
+    start = date.fromisoformat(config["start"])
+    checkpoints = state / "discovery-checkpoints"
+    checkpoints.mkdir(mode=0o700, exist_ok=True)
+    cursor = checkpoints / "github-pushes.json"
+    if cursor.exists():
+        start = date.fromisoformat(json.loads(cursor.read_text())["through"]) + timedelta(days=1)
+    if start > last:
+        return {"status": "current"}
+    candidates, skipped = discover_projects(ROOT, catalog, removed, added_day, str(start), sort="pushed")
+    for row in candidates.values():
+        row["observed_day"] = added_day
+        row.pop("added", None)
+    report = run_dir / "github-push-review.json"
+    save(report, {"from": str(start), "through": str(last), "candidates": list(candidates.values()), "skipped": skipped})
+    queue = state / "github-push-candidates.json"
+    pending = json.loads(queue.read_text()) if queue.is_file() else {}
+    pending.update(candidates)
+    pending = {key: row for key, row in pending.items() if key not in catalog and key not in removed}
+    save(queue, pending)
+    save(cursor, {"through": str(last), "review": str(report)})
+    return {"status": "complete", "candidates": len(candidates), "queued": len(pending), "skipped": skipped}
 
 
 def main():
