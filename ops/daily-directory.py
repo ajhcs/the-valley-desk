@@ -52,6 +52,12 @@ SEMANTIC_FIELDS = {
     "label": ("label",), "topic": ("topic",), "license": ("license",),
     "language": ("language",), "archived": ("archived",),
 }
+SOURCE_DATES = {
+    "project": {"created": 10, "updated": 10, "pushed": 10},
+    "publication": {"published": 4},
+    "study": {"first_posted": 4, "last_updated": 4},
+    "dataset": {"released": 4},
+}
 
 
 def semantic_changes(before, after):
@@ -92,6 +98,27 @@ def gate(kind, previous, result):
         raise StopRun(f"{kind} would remove {result['removed']:,} listings (limit 25)")
     if affected * 20 > len(previous):
         raise StopRun(f"{kind} would add, materially change or remove {affected:,} of {len(previous):,} listings (limit 5%)")
+
+
+def check_staged_dates(deltas, day):
+    for kind, records in deltas.items():
+        fields = {"added": 10, "checked": 10, **SOURCE_DATES[kind]}
+        for row in records.values():
+            for field, precision in fields.items():
+                value = row.get(field)
+                if value is None or value == "":
+                    continue
+                if (not isinstance(value, str) or len(value) < precision
+                        or not re.fullmatch(r"\d{4}(?:-\d{2}){0,2}", value)):
+                    raise StopRun(f"Invalid {kind} {field} date")
+                try:
+                    date.fromisoformat((value + "-01-01")[:10])
+                except ValueError:
+                    raise StopRun(f"Invalid {kind} {field} date") from None
+                if value > day:
+                    raise StopRun(f"Future {kind} {field} date")
+            if row.get("added") and row.get("checked") and row["checked"] < row["added"]:
+                raise StopRun(f"{kind} checked date precedes its listing date")
 
 
 def studies(run_dir, previous, day):
@@ -490,6 +517,8 @@ def run(state, d1, *, plan, scheduled):
         if not resuming:
             receipt["base_revision"] = d1.revision()
             deltas, decisions, outside = collect(d1, state, run_dir, day, previous + timedelta(days=1), last, receipt)
+            receipt["stage"] = "staged date validation"
+            check_staged_dates(deltas, day)
             prepare_load(run_dir, deltas, decisions, receipt["revision"], outside)
             receipt["sql_sha256"] = sha256((run_dir / "load.sql").read_bytes()).hexdigest()
         if plan:

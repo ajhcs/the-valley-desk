@@ -1,5 +1,7 @@
 import importlib.util
 import json
+from collections import Counter
+from datetime import date
 from pathlib import Path
 import tempfile
 import unittest
@@ -80,8 +82,43 @@ class PublicationAdapterTests(unittest.TestCase):
     def setUpClass(cls):
         cls.root = Path(__file__).resolve().parents[1]
         sys.path.insert(0, str(cls.root / 'scripts/publications'))
-        import collect, enrich, weekly_topics, test_mechanical
+        import collect, enrich, weekly, weekly_topics, test_mechanical, receipts
         cls.collect, cls.enrich, cls.topics, cls.fixtures = collect, enrich, weekly_topics, test_mechanical
+        cls.weekly, cls.receipts = weekly, receipts
+
+    def test_transient_shard_retries_then_conflicting_hits_resolve_once(self):
+        day = date(2026, 11, 25)
+        original = {"source": "MED", "id": "123", "title": "Sample", "firstIndexDate": day.isoformat()}
+        current = {**original, "pmcid": "PMC123"}
+        attempts = Counter()
+
+        def search(source, ref, start, stop):
+            key = ref["id"]
+            attempts[key] += 1
+            if key == "b" and attempts[key] == 1:
+                raise self.receipts.MetadataError("europepmc", "receipt", 503)
+            return [original if key == "a" else current]
+
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(self.weekly, "load_reference", return_value=[{"id": "a"}, {"id": "b"}]), \
+                patch.object(self.weekly, "epmc_window", side_effect=search), \
+                patch.object(self.weekly.time, "sleep") as sleep, \
+                patch.object(self.weekly, "europepmc_rows", return_value=[current]) as lookup:
+            candidate, = self.weekly.collect(Path(directory), day, day)
+        self.assertEqual(attempts, {"a": 1, "b": 2})
+        sleep.assert_called_once_with(20)
+        lookup.assert_called_once()
+        self.assertEqual(lookup.call_args.args[1], 'EXT_ID:"123" AND SRC:MED')
+        self.assertEqual(candidate["observations"][0]["record"], current)
+        self.assertEqual(candidate["institutions"], ["a", "b"])
+
+    def test_overlap_rejects_changed_publication_identity(self):
+        old = {"source": "MED", "id": "123", "doi": "10.9999/old", "firstIndexDate": "2026-11-25"}
+        new = {**old, "doi": "10.9999/new"}
+        with patch.object(self.weekly, "europepmc_rows") as lookup, \
+                self.assertRaisesRegex(self.collect.EuropePmcCoverageError, "disagree on identity"):
+            self.weekly.reconcile_epmc_overlap(None, "MED", "123", [("a", old), ("b", new)])
+        lookup.assert_not_called()
 
     def test_suggestions_accept_only_exact_requested_identifiers(self):
         matching = {'source': 'MED', 'id': '12345678', 'doi': '10.9999/test.publisher'}
