@@ -469,6 +469,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     ${header(view, nav)}
     <main id="main" tabindex="-1">${content}</main>
     ${footer(view)}
+    <p class="directory-pending" role="status" aria-atomic="true"></p>
   </body>
 </html>`;
 }

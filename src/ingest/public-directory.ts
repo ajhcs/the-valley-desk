@@ -22,6 +22,7 @@ import {
   renderRegionalData,
   registryLabel,
   rows,
+  batchRows,
   optionsFor,
   institutionFor,
   projectQuery,
@@ -88,10 +89,10 @@ import {
   type ScopeField,
 } from "./public-directory-entity";
 
+const institutionRecordsSql = "SELECT record FROM research_institutions ORDER BY id";
+
 export async function institutionRefs(db: ResearchDb): Promise<Institution[]> {
-  return (await rows<{ record: string }>(db, "SELECT record FROM research_institutions ORDER BY id")).map((r) =>
-    JSON.parse(r.record),
-  );
+  return (await rows<{ record: string }>(db, institutionRecordsSql)).map((r) => JSON.parse(r.record));
 }
 
 type RemovalDb = ResearchDb;
@@ -427,10 +428,10 @@ export async function servePublicDirectory(
   if (request.method !== "GET" || !store) return renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled);
   const version = await dataVersion(db, `${cache.build ?? ""}:${publicationsEnabled}:${origin}`);
   if (!version) return renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled);
-  const key = cacheKey(request, version, request.headers.get(fragmentHeader) === "results" ? "fragment" : "page");
+  const key = cacheKey(request, version.response, request.headers.get(fragmentHeader) === "results" ? "fragment" : "page");
   const cached = await store.match(key).catch(() => undefined);
   if (cached) return fromCache(cached, nonce);
-  const response = await renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled, version);
+  const response = await renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled, version.projectRevision);
   if (response.status === 200 && response.headers.get("x-directory-project-source") !== "fallback") {
     const saving = forCache(response, nonce).then((copy) => store.put(key, copy)).catch(() => undefined);
     if (cache.waitUntil) cache.waitUntil(saving);
@@ -448,7 +449,7 @@ async function renderPublicDirectory(
   nonce?: string,
   suppliedCatalog?: ReturnType<typeof createDirectoryCatalog>,
   publicationsEnabled = false,
-  version?: string,
+  projectRevision?: string,
 ): Promise<Response> {
   const head = request.method === "HEAD";
   if (request.method !== "GET" && !head) {
@@ -494,6 +495,7 @@ async function renderPublicDirectory(
   // This wrapper applies only to read queries issued below; cache versioning uses the real DB.
   let bypassSummaries = !publicationsEnabled;
   const researchDb: ResearchDb = {
+    batch: db?.batch?.bind(db),
     prepare(sql) {
       if (!publicationsEnabled) sql = sql.replace(/\bresearch_visible\b/g, "(SELECT * FROM research_visible WHERE kind IN ('project','regional-data'))");
       if (bypassSummaries) sql = sql.replace(/\bresearch_summary_kinds\b/g, "(SELECT * FROM research_summary_kinds WHERE 0)")
@@ -532,7 +534,7 @@ async function renderPublicDirectory(
     }
     if (!suppliedCatalog && !regionalList && !path.startsWith(regionalDataApi + "/") && !path.startsWith("/discover/regional-data/") && path !== methodPath && path !== "/llms.txt" &&
         (path !== "/sitemap.xml" && !path.startsWith("/discover/sitemap/") || path === "/discover/sitemap/directory.xml")) {
-      const result = await readProjectCatalog(researchDb, version);
+      const result = await readProjectCatalog(db!, projectRevision);
       catalog = result.catalog;
       source = result.fallback ? "fallback" : "d1";
     }
@@ -631,46 +633,52 @@ async function renderPublicDirectory(
       );
       if (!row) return missing();
       const p: Publication = JSON.parse(row.record);
+      const institution = p.institutions[0];
+      const topic = healthTopic(p.topic) ? facetSlug(p.topic) : "";
+      type RecordRow = { record: string };
+      const readRelationships = (includePaperLinks: boolean) =>
+        batchRows<[{ id: string }, { project_id: string }, RecordRow, RecordRow & { produced: number }, RecordRow]>(
+          researchDb,
+          [
+            [
+              "SELECT id FROM research_visible WHERE kind='project' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND (value=? OR value IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?)))",
+              id, id,
+            ],
+            includePaperLinks ? [
+              "SELECT project_id FROM paper_repository_links WHERE paper_id=? ORDER BY project_id",
+              id,
+            ] : null,
+            [
+              "SELECT record FROM research_visible WHERE kind='publication' AND (id IN (?,?) OR (id IN (SELECT id FROM research_facets WHERE field='version' AND value=?) AND id<>?))",
+              p.preprint_of ?? "", p.published_as ?? "", id, id,
+            ],
+            hasDatasets ? [
+              "SELECT record, EXISTS (SELECT 1 FROM json_each(CASE WHEN json_type(record, '$.paper_provenance')='array' THEN json_extract(record, '$.paper_provenance') ELSE '[]' END) pp WHERE json_extract(pp.value, '$.relation')='produced' AND (json_extract(pp.value, '$.paper')=? OR json_extract(pp.value, '$.paper') IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?))) produced FROM research_visible WHERE kind='dataset' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND (value=? OR value IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?))) ORDER BY activity DESC,id LIMIT 50",
+              id, id, id, id,
+            ] : null,
+            pubApi ? null : [institutionRecordsSql],
+          ],
+        );
+      const [[reverse, paperLinks, versions, datasetRows, institutionRecords], readNearbyInDateOrder] = await Promise.all([
+        readRelationships(true).catch((error) => {
+          if (!/no such table:\s*paper_repository_links\b/i.test(String(error))) throw error;
+          return readRelationships(false);
+        }),
+        !pubApi && institution ? manyPublications(researchDb, institution, topic) : false,
+      ]);
+
       const related: Listing[] = [];
-      const reverse = await rows<{ id: string }>(
-        researchDb,
-        "SELECT id FROM research_visible WHERE kind='project' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND (value=? OR value IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?)))",
-        id,
-        id,
-      );
       for (const pid of new Set([...p.projects, ...reverse.map((r) => r.id)])) {
         const project = catalog.project(pid, removed);
         if (project) related.push({ kind: "project", record: project });
       }
       // Repositories the paper's text links to. Shown apart from software the paper releases.
-      const linkedCode = (
-        await optionalRows<{ project_id: string }>(
-          researchDb,
-          "SELECT project_id FROM paper_repository_links WHERE paper_id=? ORDER BY project_id",
-          id,
-        )
-      )
+      const linkedCode = paperLinks
         .map((r) => catalog.project(r.project_id, removed))
         .filter((project): project is DirectoryProject => !!project && !related.some((i) => i.kind === "project" && i.record.id === project.id))
         .map((record) => ({ kind: "project", record }) as Listing);
-      const versions = await rows<{ record: string }>(
-        researchDb,
-        "SELECT record FROM research_visible WHERE kind='publication' AND (id IN (?,?) OR (id IN (SELECT id FROM research_facets WHERE field='version' AND value=?) AND id<>?))",
-        p.preprint_of ?? "",
-        p.published_as ?? "",
-        id,
-        id,
-      );
       for (const version of versions) related.push({ kind: "publication", record: JSON.parse(version.record) });
-      const datasets = hasDatasets
-        ? (
-            await rows<{ record: string; produced: number }>(
-              researchDb,
-              "SELECT record, EXISTS (SELECT 1 FROM json_each(CASE WHEN json_type(record, '$.paper_provenance')='array' THEN json_extract(record, '$.paper_provenance') ELSE '[]' END) pp WHERE json_extract(pp.value, '$.relation')='produced' AND (json_extract(pp.value, '$.paper')=? OR json_extract(pp.value, '$.paper') IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?))) produced FROM research_visible WHERE kind='dataset' AND id IN (SELECT id FROM research_facets WHERE field='paper' AND (value=? OR value IN (SELECT value FROM research_facets WHERE field='alternate' AND id=?))) ORDER BY activity DESC,id LIMIT 50",
-              id, id, id, id,
-            )
-          ).map((r) => ({ record: JSON.parse(r.record) as Dataset, produced: !!r.produced }))
-        : [];
+      const datasets = datasetRows.map((r) => ({ record: JSON.parse(r.record) as Dataset, produced: !!r.produced }));
       if (pubApi)
         return json(() => ({
           publication: {
@@ -682,16 +690,14 @@ async function renderPublicDirectory(
             published_as: versions.some((v) => JSON.parse(v.record).id === p.published_as) ? p.published_as : null,
           },
         }));
-      const refs = await institutionRefs(researchDb);
-      const institution = p.institutions[0];
-      const topic = healthTopic(p.topic) ? facetSlug(p.topic) : "";
+      const refs: Institution[] = institutionRecords.map((row) => JSON.parse(row.record));
       const inFacet = (field: string) =>
         ` AND EXISTS(SELECT 1 FROM research_facets f WHERE f.field='${field}' AND f.value=? AND f.id=+v.id)`;
       const nearby = institution
         ? (
             await rows<{ kind: Listing["kind"]; record: string }>(
               researchDb,
-              (await manyPublications(researchDb, institution, topic))
+              readNearbyInDateOrder
                 ? "SELECT kind,record FROM research_visible v WHERE +kind='publication' AND +id NOT IN (?,?,?)" +
                     inFacet("institution") +
                     (topic ? inFacet("topic") : "") +

@@ -55,18 +55,44 @@ export const facetSlug = (name: string) =>
     .toLowerCase()
     .match(/[\p{L}\p{N}]+/gu)
     ?.join("-") ?? "";
+type SqlValue = string | number;
+type ReadQuery = [sql: string, ...args: SqlValue[]];
+type QueryResult = { results: unknown[]; success?: boolean };
 type Prepared = {
-  bind?(...args: (string | number)[]): Prepared;
-  all(): Promise<{ results: unknown[]; success?: boolean }>;
+  bind?(...args: SqlValue[]): Prepared;
+  all(): Promise<QueryResult>;
 };
-export type ResearchDb = { prepare(sql: string): Prepared };
-export async function rows<T>(db: ResearchDb, sql: string, ...args: (string | number)[]): Promise<T[]> {
+export type ResearchDb = {
+  prepare(sql: string): Prepared;
+  batch?(statements: Prepared[]): Promise<QueryResult[]>;
+};
+
+function prepareRead(db: ResearchDb, [sql, ...args]: ReadQuery): Prepared {
   const prepared = db.prepare(sql);
   const query = args.length ? prepared.bind?.(...args) : prepared;
   if (!query) throw Error("Directory binding unavailable");
-  const result = await query.all();
+  return query;
+}
+
+function queryRows<T>(result: QueryResult): T[] {
   if (result.success === false || !Array.isArray(result.results)) throw Error("Directory query unavailable");
   return result.results as T[];
+}
+
+export async function rows<T>(db: ResearchDb, sql: string, ...args: SqlValue[]): Promise<T[]> {
+  return queryRows<T>(await prepareRead(db, [sql, ...args]).all());
+}
+
+/** A null query reserves an empty result in the returned tuple. */
+export async function batchRows<T extends unknown[]>(
+  db: ResearchDb,
+  queries: { [K in keyof T]: ReadQuery | null },
+): Promise<{ [K in keyof T]: T[K][] }> {
+  const statements = queries.flatMap((query) => query ? [prepareRead(db, query)] : []);
+  const results = db.batch ? await db.batch(statements) : await Promise.all(statements.map((statement) => statement.all()));
+  if (results.length !== statements.length) throw Error("Directory batch unavailable");
+  let index = 0;
+  return queries.map((query) => query ? queryRows(results[index++]) : []) as { [K in keyof T]: T[K][] };
 }
 
 export type Publication = {
@@ -542,11 +568,20 @@ export async function researchQuery(db: ResearchDb, params: URLSearchParams, ref
   const sort = params.get("sort");
   if (relevance && (!sort || sort === "relevance")) {
     // A search is ordered by full-text relevance unless another order is chosen.
-    const counts = await rows<KindCount>(db, relevance.count, ...relevance.args);
-    const more = counts.reduce((sum, row) => sum + row.n, 0) > cap;
-    const total = more ? cap : counts.reduce((sum, row) => sum + row.n, 0);
-    const page = Math.min(pageNumber(params), Math.max(1, Math.ceil(total / 24)));
-    const result = await rows<{ kind: Listing["kind"]; record: string }>(db, relevance.sql, ...relevance.args, (page - 1) * 24);
+    type Ranked = { kind: Listing["kind"]; record: string };
+    const requested = pageNumber(params);
+    // The first page needs no count to choose its offset. Fetch both in one database call.
+    const [counts, firstPage] = requested === 1 && db.batch
+      ? await batchRows<[KindCount, Ranked]>(db, [
+          [relevance.count, ...relevance.args],
+          [relevance.sql, ...relevance.args, 0],
+        ])
+      : [await rows<KindCount>(db, relevance.count, ...relevance.args), undefined];
+    const counted = counts.reduce((sum, row) => sum + row.n, 0);
+    const more = counted > cap;
+    const total = Math.min(counted, cap);
+    const page = Math.min(requested, Math.max(1, Math.ceil(total / 24)));
+    const result = firstPage ?? await rows<Ranked>(db, relevance.sql, ...relevance.args, (page - 1) * 24);
     return { items: result.map(readListing), counts, page, total, more };
   }
   const sortColumn = sort === "name" ? "title" : sort === "activity" ? "activity" : "added";

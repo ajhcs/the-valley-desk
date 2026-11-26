@@ -7,6 +7,35 @@
   const viewKey = 'valley-desk:directory-view:v1';
   const narrow = matchMedia('(max-width: 53rem)');
   const region = () => document.getElementById(regionId);
+  const status = document.querySelector('.directory-pending');
+  const searchMessage = 'Searching the directory…';
+  const updateMessage = 'Updating results…';
+  const pageMessage = 'Loading more results…';
+  let loadingTimer;
+
+  function clearLoading() {
+    clearTimeout(loadingTimer);
+    if (status) status.textContent = '';
+  }
+
+  function showLoading(message) {
+    clearLoading();
+    if (status) loadingTimer = setTimeout(() => { status.textContent = message; }, 180);
+  }
+
+  // Listen after the enhanced results handlers, which prevent native navigation.
+  addEventListener('submit', event => {
+    if (event.defaultPrevented || !event.target.matches?.('.home-search, #research-form')) return;
+    showLoading(event.target.matches('.home-search') || event.submitter?.matches('.search-go')
+      ? searchMessage : updateMessage);
+  });
+  addEventListener('click', event => {
+    if (event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = event.target.closest?.('.pagination a[href], .record-title a[href]');
+    if (!link || link.origin !== location.origin || link.target || link.hasAttribute('download')) return;
+    showLoading(link.closest('.pagination') ? pageMessage : 'Opening listing…');
+  });
+  addEventListener('pageshow', clearLoading);
 
   document.addEventListener('keydown', event => {
     if (event.key !== '/' || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey ||
@@ -95,6 +124,7 @@
     clearTimeout(timer);
     pending?.abort();
     pending = undefined;
+    clearLoading();
   }
 
   function replaceResults(next, mode, focus) {
@@ -151,12 +181,14 @@
     }
   }
 
-  async function refresh(url, { mode = 'push', focus } = {}) {
+  async function refresh(url, { mode = 'push', focus, message = updateMessage } = {}) {
     cancelPending();
     if (url.href === displayedUrl && mode !== 'pop') return;
     const controller = new AbortController();
     pending = controller;
     region()?.setAttribute('aria-busy', 'true');
+    showLoading(message);
+    let navigating = false;
     try {
       const response = await fetch(url, {
         signal: controller.signal,
@@ -175,6 +207,7 @@
       replaceResults(next, mode, focus);
     } catch {
       if (!controller.signal.aborted) {
+        navigating = true;
         if (mode === 'replace') location.replace(url);
         else if (mode === 'pop') location.reload();
         else location.assign(url);
@@ -183,6 +216,7 @@
       if (pending === controller) {
         pending = undefined;
         region()?.removeAttribute('aria-busy');
+        if (!navigating) clearLoading();
       }
     }
   }
@@ -214,7 +248,7 @@
     cancelPending();
     region()?.removeAttribute('aria-busy');
     const input = event.target;
-    timer = setTimeout(() => refresh(formUrl(input.form)), 220);
+    timer = setTimeout(() => refresh(formUrl(input.form), { message: searchMessage }), 220);
   }
   document.addEventListener('input', queueSearch);
   document.addEventListener('compositionend', queueSearch);
@@ -225,7 +259,11 @@
   document.addEventListener('submit', event => {
     if (event.target.id !== filterId && event.target.id !== jumpId) return;
     event.preventDefault();
-    refresh(formUrl(event.target), { focus: event.target.id === jumpId ? 'page' : 'results' });
+    const paging = event.target.id === jumpId;
+    refresh(formUrl(event.target), {
+      focus: paging ? 'page' : 'results',
+      message: paging ? pageMessage : event.submitter?.matches('.search-go') ? searchMessage : updateMessage,
+    });
   });
   document.addEventListener('click', event => {
     if (event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -238,6 +276,7 @@
     event.preventDefault();
     refresh(new URL(link.href), {
       focus: link.hasAttribute('data-page-link') ? 'page' : link.hasAttribute('data-view-link') ? 'view' : 'results',
+      message: link.hasAttribute('data-page-link') ? pageMessage : updateMessage,
     });
   });
   addEventListener('popstate', () => refresh(new URL(location.href), { mode: 'pop' }));

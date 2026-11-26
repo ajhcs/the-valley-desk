@@ -711,7 +711,7 @@ async function facets(context: ToolContext) {
   const byCount = <T extends { name: string; listings: number }>(list: T[]) =>
     list.sort((a, b) => b.listings - a.listings || a.name.localeCompare(b.name, "en"));
   const page = (field: string, slug: string) => origin + "/discover/" + field + "/" + encodeURIComponent(slug);
-  const { catalog } = await readProjectCatalog(db!, await dataVersion(db, origin));
+  const { catalog } = await readProjectCatalog(db!, (await dataVersion(db, origin))?.projectRevision);
   if (!counts) {
     const home = catalog.home(removed, now);
     const list = (kind: "institution" | "topic" | "county", values: { name: string; count: number }[]) =>
