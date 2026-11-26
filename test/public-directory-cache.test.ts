@@ -8,6 +8,7 @@ import worker from "../worker.js";
 import { projectRecordsSql } from "../src/ingest/public-directory-store";
 
 const origin = "https://thevalleydesk.org";
+const workerVersion = "bd85879c-a28e-4f7c-9ce1-0dfa872e3d9e";
 
 class MemoryCache {
   entries = new Map<string, Response>();
@@ -29,20 +30,25 @@ test("directory responses are cached per data version and stay correct after rem
   const sqlite = new DatabaseSync(":memory:");
   let queries = 0;
   let catalogReads = 0;
+  let failPreflight = false;
+  let failRemovals = false;
   const batches: number[] = [];
   const env = {
     DIRECTORY_PUBLIC_ENABLED: "true",
     PUBLICATIONS_PUBLIC_ENABLED: "true",
     BUILD_SHA: "test-build",
+    CF_VERSION_METADATA: { id: workerVersion },
     VALLEY_DESK_DB: {
       async batch(statements: { all(): { results: unknown[] } }[]) {
         batches.push(statements.length);
+        if (failPreflight && statements.length === 3) throw new Error("Batch temporarily unavailable");
         return statements.map((statement) => statement.all());
       },
       prepare(sql: string) {
         const all = (...args: (number | string)[]) => {
           queries++;
           if (sql === projectRecordsSql) catalogReads++;
+          if (failRemovals && sql === "SELECT github_id FROM public_directory_removals") throw new Error("Removals unavailable");
           return { results: sqlite.prepare(sql).all(...args) };
         };
         return { all: () => all(), bind: (...args: (number | string)[]) => ({ all: () => all(...args) }) };
@@ -68,6 +74,7 @@ test("directory responses are cached per data version and stay correct after rem
     const first = await get("/discover/works?q=tissue");
     assert.equal(first.headers.get("x-directory-cache"), "miss");
     const firstHtml = await first.text();
+    assert.ok(firstHtml.includes('/_directory-assets/' + workerVersion + '/directory.css'));
     assert.equal(cache.puts, 1);
     queries = 0;
     const second = await get("/discover/works?q=tissue");
@@ -142,12 +149,27 @@ test("directory responses are cached per data version and stay correct after rem
     assert.equal(catalogReads, 2, "a removal invalidates the page and filters the reused catalog immediately");
 
     batches.length = 0;
-    await get("/discover/works?q=tissue&sort=relevance");
-    assert.deepEqual(batches, [2], "the search counts and first page share one batch");
+    const searchWithTimings = await get("/discover/works?q=tissue&sort=relevance");
+    assert.deepEqual(batches, [3, 2], "search batches removal, visibility, and institutions, then counts and records");
+    assert.match(searchWithTimings.headers.get("server-timing") ?? "", /preflight;dur=[\d.]+/);
+    assert.match(searchWithTimings.headers.get("server-timing") ?? "", /catalog;dur=[\d.]+;desc="warm"/);
+    const searchHit = await get("/discover/works?q=tissue&sort=relevance");
+    assert.equal(searchHit.headers.get("x-directory-cache"), "hit");
+    assert.doesNotMatch(searchHit.headers.get("server-timing") ?? "", /preflight|catalog/);
     batches.length = 0;
     const paper = await get("/discover/publication/pmid%3A990000001");
     assert.equal(paper.status, 200);
-    assert.deepEqual(batches, [4], "project links, versions, and institutions share one batch");
+    assert.deepEqual(batches, [2, 4], "publication batches removal and visibility, then links, versions, and institutions");
+    assert.match(paper.headers.get("server-timing") ?? "", /relationships;dur=[\d.]+/);
+
+    failPreflight = true;
+    const retry = await get("/discover/works?q=tissue&sort=relevance&probe=retry");
+    assert.equal(retry.status, 200);
+    assert.match(retry.headers.get("server-timing") ?? "", /removals;dur=[\d.]+/);
+    failRemovals = true;
+    assert.equal((await get("/discover/works?q=tissue&probe=removals")).status, 503);
+    failRemovals = false;
+    failPreflight = false;
 
     // Without a readable version the cache is skipped and the page still renders.
     sqlite.exec("DROP TABLE research_summary_kinds");
@@ -158,4 +180,33 @@ test("directory responses are cached per data version and stay correct after rem
     (globalThis as { caches?: unknown }).caches = previous;
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("directory assets are immutable only at URLs owned by the active Worker version", async () => {
+  const bytes = "/* directory css */";
+  const env = {
+    CF_VERSION_METADATA: { id: workerVersion },
+    ASSETS: {
+      async fetch(request: Request) {
+        assert.equal(new URL(request.url).pathname, "/directory.css");
+        const unchanged = request.headers.get("if-none-match") === '"asset"';
+        return new Response(unchanged || request.method === "HEAD" ? null : bytes, {
+          status: unchanged ? 304 : 200,
+          headers: { etag: '"asset"', "content-type": "text/css", "cache-control": "public, max-age=0, must-revalidate" },
+        });
+      },
+    },
+  };
+  const get = (path: string, init?: RequestInit) => worker.fetch(new Request(origin + path, init), env, {});
+  const versionedPath = "/_directory-assets/" + workerVersion + "/directory.css";
+  const fresh = await get(versionedPath);
+  assert.equal(await fresh.text(), bytes);
+  assert.match(fresh.headers.get("cache-control") ?? "", /31536000, immutable/);
+  assert.equal((await get(versionedPath, { headers: { "if-none-match": '"asset"' } })).status, 304);
+  assert.equal(await (await get(versionedPath, { method: "HEAD" })).text(), "");
+  const lagged = await get("/_directory-assets/00000000-0000-0000-0000-000000000000/directory.css");
+  assert.equal(lagged.status, 307);
+  assert.equal(lagged.headers.get("location"), "/directory.css");
+  assert.equal(lagged.headers.get("cache-control"), "no-store");
+  assert.match((await get("/directory.css")).headers.get("cache-control") ?? "", /must-revalidate/);
 });

@@ -11,6 +11,29 @@ export type DirectoryKinds = {
   regionalEnabled?: boolean;
 };
 
+export type VisibleKinds = {
+  publications: number; studies: number; datasets: number; regionalEnabled: number; regionalData: number;
+};
+
+export const visibleKindsSql = `SELECT
+  EXISTS(SELECT 1 FROM research_visible WHERE kind='publication') publications,
+  EXISTS(SELECT 1 FROM research_visible WHERE kind='study') studies,
+  CASE WHEN (SELECT enabled FROM dataset_visibility WHERE id=1)=1
+    THEN EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') ELSE 0 END datasets,
+  coalesce((SELECT enabled FROM regional_data_visibility WHERE id=1),0) regionalEnabled,
+  CASE WHEN (SELECT enabled FROM regional_data_visibility WHERE id=1)=1
+    THEN EXISTS(SELECT 1 FROM research_visible WHERE kind='regional-data') ELSE 0 END regionalData`;
+
+export function directoryKinds(visible: VisibleKinds): DirectoryKinds {
+  return {
+    hasPubs: visible.publications === 1,
+    hasStudies: visible.studies === 1,
+    hasDatasets: visible.datasets === 1,
+    regionalEnabled: visible.regionalEnabled === 1,
+    hasRegionalData: visible.regionalData === 1,
+  };
+}
+
 /** Reads an optional table added after the core schema; a database without it reads as empty. */
 export async function optionalRows<T>(db: ResearchDb, sql: string, ...args: string[]): Promise<T[]> {
   try {
@@ -27,28 +50,8 @@ export async function readKinds(db: ResearchDb, publicationsEnabled: boolean): P
   let hasPubs = false, hasStudies = false, hasDatasets = false;
   if (publicationsEnabled) {
     try {
-      const [visible] = await rows<{
-        publications: number; studies: number; datasets: number; regionalEnabled: number; regionalData: number;
-      }>(
-        db,
-        `SELECT
-          EXISTS(SELECT 1 FROM research_visible WHERE kind='publication') publications,
-          EXISTS(SELECT 1 FROM research_visible WHERE kind='study') studies,
-          CASE WHEN (SELECT enabled FROM dataset_visibility WHERE id=1)=1
-            THEN EXISTS(SELECT 1 FROM research_visible WHERE kind='dataset') ELSE 0 END datasets,
-          coalesce((SELECT enabled FROM regional_data_visibility WHERE id=1),0) regionalEnabled,
-          CASE WHEN (SELECT enabled FROM regional_data_visibility WHERE id=1)=1
-            THEN EXISTS(SELECT 1 FROM research_visible WHERE kind='regional-data') ELSE 0 END regionalData`,
-      );
-      if (visible) {
-        return {
-          hasPubs: visible.publications === 1,
-          hasStudies: visible.studies === 1,
-          hasDatasets: visible.datasets === 1,
-          regionalEnabled: visible.regionalEnabled === 1,
-          hasRegionalData: visible.regionalData === 1,
-        };
-      }
+      const [visible] = await rows<VisibleKinds>(db, visibleKindsSql);
+      if (visible) return directoryKinds(visible);
     } catch (error) {
       if (!/no such table/i.test(String(error))) throw error;
       // Older schemas can lack the optional visibility tables.

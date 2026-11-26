@@ -23,6 +23,7 @@ import { handleDiscoveryPilot } from "./src/ingest/discovery-pilot.ts";
 import { handleDiscoveryPilotPage } from "./src/ingest/discovery-pilot-page.ts";
 import { handleDirectoryRoutes } from "./src/ingest/discovery-directory-runtime.ts";
 import { directoryNotificationPath, handleDirectoryNotification } from "./src/ingest/directory-notifications.ts";
+import { serveDirectoryAsset } from "./src/ingest/public-directory-assets.ts";
 
 const PUBLIC_MACHINE_PATHS = new Set([
   "/feed.json",
@@ -578,6 +579,11 @@ async function handleFetch(request, env, origin, nonce, ctx) {
   const path = url.pathname;
   const method = request.method.toUpperCase();
 
+  if (path.startsWith("/_directory-assets/")) {
+    const asset = await serveDirectoryAsset(request, url, env.ASSETS, env.CF_VERSION_METADATA?.id);
+    if (asset) return asset;
+  }
+
   if (path === directoryNotificationPath) return handleDirectoryNotification(request, env);
 
   if (env.DIRECTORY_PUBLIC_ENABLED === "true" && (path.startsWith("/mcp") || path.startsWith("/discover/connect") || path === "/discover/terms" || path === "/discover/terms/" || path.startsWith("/.well-known/openai-"))) {
@@ -599,6 +605,8 @@ async function handleFetch(request, env, origin, nonce, ctx) {
     const { isPublicDirectoryPath, servePublicDirectory } = await import("./src/ingest/public-directory.ts");
     if (isPublicDirectoryPath(path)) return servePublicDirectory(request, env.VALLEY_DESK_DB, origin, nonce, undefined, env.PUBLICATIONS_PUBLIC_ENABLED === "true", {
       build: env.CF_VERSION_METADATA?.id ?? env.BUILD_SHA ?? "",
+      assetVersion: env.CF_VERSION_METADATA?.id,
+      timings: method === "GET" && (path.replace(/\/$/, "") === "/discover/works" || path.startsWith("/discover/publication/")),
       waitUntil: ctx && typeof ctx.waitUntil === "function" ? (work) => ctx.waitUntil(work) : undefined,
     });
   }

@@ -71,10 +71,11 @@ import {
   type DirectoryProject,
 } from "./public-directory-data";
 import { renderDirectoryPage, type DirectoryNav, type DirectoryView } from "./public-directory-page";
-import { navFor, optionalRows, readKinds } from "./public-directory-kinds";
+import { directoryKinds, navFor, optionalRows, readKinds, visibleKindsSql, type VisibleKinds } from "./public-directory-kinds";
 import { activeGroups, groupList, partnerList, partners, similarListings } from "./public-directory-discover";
 import { cacheKey, dataVersion, defaultCache, forCache, fromCache, type CacheStore } from "./public-directory-cache";
 import { readProject, readProjectCatalog } from "./public-directory-store";
+import { DirectoryTimings } from "./public-directory-timings";
 import { renderResultsRegion } from "./public-directory-results";
 import { counties } from "./public-directory-data";
 import { healthTopic, partialDateText } from "./public-directory-ui";
@@ -90,9 +91,14 @@ import {
 } from "./public-directory-entity";
 
 const institutionRecordsSql = "SELECT record FROM research_institutions ORDER BY id";
+const projectRemovalsSql = "SELECT github_id FROM public_directory_removals";
+type ProjectRemoval = { github_id: string };
+type InstitutionRecord = { record: string };
+
+const parseInstitutions = (records: InstitutionRecord[]): Institution[] => records.map((row) => JSON.parse(row.record));
 
 export async function institutionRefs(db: ResearchDb): Promise<Institution[]> {
-  return (await rows<{ record: string }>(db, institutionRecordsSql)).map((r) => JSON.parse(r.record));
+  return parseInstitutions(await rows<InstitutionRecord>(db, institutionRecordsSql));
 }
 
 type RemovalDb = ResearchDb;
@@ -132,9 +138,12 @@ export function isPublicDirectoryPath(path: string) {
 
 export async function removalIds(db?: RemovalDb) {
   if (!db) throw new Error("Removal database unavailable");
-  const result = await rows<{ github_id: string }>(db, "SELECT github_id FROM public_directory_removals");
-  if (!result.every((row) => typeof row?.github_id === "string")) throw new Error("Invalid removal record");
-  return new Set(result.map((row) => row.github_id));
+  return projectRemovalIds(await rows<ProjectRemoval>(db, projectRemovalsSql));
+}
+
+function projectRemovalIds(records: ProjectRemoval[]) {
+  if (!records.every((row) => typeof row?.github_id === "string")) throw new Error("Invalid removal record");
+  return new Set(records.map((row) => row.github_id));
 }
 
 function publicProject(project: DirectoryProject) {
@@ -422,16 +431,19 @@ export async function servePublicDirectory(
   nonce?: string,
   catalog?: ReturnType<typeof createDirectoryCatalog>,
   publicationsEnabled = false,
-  cache: { store?: CacheStore; build?: string; waitUntil?: (work: Promise<unknown>) => void } = {},
+  cache: { store?: CacheStore; build?: string; assetVersion?: string; timings?: boolean; waitUntil?: (work: Promise<unknown>) => void } = {},
 ): Promise<Response> {
+  const timings = new DirectoryTimings(cache.timings === true);
   const store = cache.store ?? defaultCache();
-  if (request.method !== "GET" || !store) return renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled);
-  const version = await dataVersion(db, `${cache.build ?? ""}:${publicationsEnabled}:${origin}`);
-  if (!version) return renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled);
+  const render = (projectRevision?: string) =>
+    renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled, projectRevision, cache.assetVersion, timings);
+  if (request.method !== "GET" || !store) return timings.finish(await render());
+  const version = await timings.measure("version", () => dataVersion(db, `${cache.build ?? ""}:${publicationsEnabled}:${origin}`));
+  if (!version) return timings.finish(await render());
   const key = cacheKey(request, version.response, request.headers.get(fragmentHeader) === "results" ? "fragment" : "page");
-  const cached = await store.match(key).catch(() => undefined);
-  if (cached) return fromCache(cached, nonce);
-  const response = await renderPublicDirectory(request, db, origin, nonce, catalog, publicationsEnabled, version.projectRevision);
+  const cached = await timings.measure("edge", () => store.match(key).catch(() => undefined));
+  if (cached) return timings.finish(await fromCache(cached, nonce));
+  const response = await render(version.projectRevision);
   if (response.status === 200 && response.headers.get("x-directory-project-source") !== "fallback") {
     const saving = forCache(response, nonce).then((copy) => store.put(key, copy)).catch(() => undefined);
     if (cache.waitUntil) cache.waitUntil(saving);
@@ -439,23 +451,26 @@ export async function servePublicDirectory(
   }
   const headers = new Headers(response.headers);
   headers.set("x-directory-cache", "miss");
-  return new Response(response.body, { status: response.status, headers });
+  return timings.finish(new Response(response.body, { status: response.status, headers }));
 }
 
 async function renderPublicDirectory(
   request: Request,
-  db?: RemovalDb,
-  origin = DEFAULT_PUBLIC_ORIGIN,
-  nonce?: string,
-  suppliedCatalog?: ReturnType<typeof createDirectoryCatalog>,
-  publicationsEnabled = false,
-  projectRevision?: string,
+  db: RemovalDb | undefined,
+  origin: string,
+  nonce: string | undefined,
+  suppliedCatalog: ReturnType<typeof createDirectoryCatalog> | undefined,
+  publicationsEnabled: boolean,
+  projectRevision: string | undefined,
+  assetVersion: string | undefined,
+  timings: DirectoryTimings,
 ): Promise<Response> {
   const head = request.method === "HEAD";
   if (request.method !== "GET" && !head) {
     return new Response(null, { status: 405, headers: { ...noStore, allow: "GET, HEAD" } });
   }
   const { pathname, search, searchParams } = new URL(request.url);
+  const path = pathname.replace(/\/$/, "") || "/";
   const api = pathname.startsWith("/api/directory/");
   const fragment = request.headers.get(fragmentHeader) === "results";
   let catalog = suppliedCatalog ?? directoryCatalog;
@@ -463,28 +478,41 @@ async function renderPublicDirectory(
   const projectSource = (): Record<string, string> => source ? { "x-directory-project-source": source } : {};
   let hasPubs = false, hasStudies = false, hasDatasets = false, hasRegionalData = false;
   const page = (view: DirectoryView, status: number) => {
+    const end = timings.start("shell");
     const renderFragment =
       fragment && view.kind === "results" && (view.data.scope?.entity.kind !== "county" || view.data.total > 0);
     const headers = view.kind === "results" ? { ...htmlHeaders, vary: fragmentHeader } : htmlHeaders;
-    return new Response(
+    const response = new Response(
       head
         ? null
         : renderFragment
           ? renderResultsRegion(catalog, view.data)
-          : renderDirectoryPage(view, catalog, origin, nonce, navFor({ hasPubs, hasStudies, hasDatasets, hasRegionalData }, pathname + search)),
+          : renderDirectoryPage(view, catalog, origin, nonce, navFor({ hasPubs, hasStudies, hasDatasets, hasRegionalData }, pathname + search), assetVersion),
       {
         status,
         headers: { ...headers, ...projectSource(), ...(status >= 400 ? { "x-robots-tag": "noindex" } : {}) },
       },
     );
+    end();
+    return response;
   };
   const json = (value: () => unknown, status = 200) =>
     new Response(head ? null : JSON.stringify(value()), { status, headers: { ...jsonHeaders, ...projectSource() } });
   const redirect = (path: string) => new Response(null, { status: 308, headers: { ...noStore, location: path } });
 
   let removed: Set<string>;
+  // Use the existing individual reads if this batch cannot run. Removals still fail closed.
+  const preflight = publicationsEnabled && projectRevision && db?.batch &&
+    (path === browsePath || path.startsWith("/discover/publication/"))
+    ? await timings.measure("preflight", () =>
+        batchRows<[ProjectRemoval, VisibleKinds, InstitutionRecord]>(db, [
+          [projectRemovalsSql],
+          [visibleKindsSql],
+          path === browsePath ? [institutionRecordsSql] : null,
+        ]).catch(() => undefined))
+    : undefined;
   try {
-    removed = await removalIds(db);
+    removed = preflight ? projectRemovalIds(preflight[0]) : await timings.measure("removals", () => removalIds(db));
   } catch (error) {
     console.error("directory_unavailable", "removals", String(error));
     return api ? json(() => ({ error: "directory_unavailable" }), 503) : page({ kind: "unavailable" }, 503);
@@ -504,7 +532,6 @@ async function renderPublicDirectory(
       return db!.prepare(sql);
     },
   };
-  const path = pathname.replace(/\/$/, "") || "/";
   const combinedApi = path === "/api/directory/listings";
   const pubApi = path === publicationsApi || path.startsWith(publicationsApi + "/");
   const studyApi = path === studiesApi || path.startsWith(studiesApi + "/");
@@ -521,7 +548,10 @@ async function renderPublicDirectory(
   let research: Listing[] = [];
   try {
     let regionalEnabled: boolean | undefined;
-    ({ hasPubs, hasStudies, hasDatasets, hasRegionalData, regionalEnabled } = await readKinds(researchDb, publicationsEnabled));
+    const visible = preflight?.[1][0];
+    ({ hasPubs, hasStudies, hasDatasets, hasRegionalData, regionalEnabled } = visible
+      ? directoryKinds(visible)
+      : await timings.measure("kinds", () => readKinds(researchDb, publicationsEnabled)));
     if (hasRegionalData && !hasPubs) bypassSummaries = true;
     if (!suppliedCatalog && path.startsWith(apiPath + "/")) {
       const id = decode(pathname.slice(apiPath.length + 1));
@@ -534,7 +564,9 @@ async function renderPublicDirectory(
     }
     if (!suppliedCatalog && !regionalList && !path.startsWith(regionalDataApi + "/") && !path.startsWith("/discover/regional-data/") && path !== methodPath && path !== "/llms.txt" &&
         (path !== "/sitemap.xml" && !path.startsWith("/discover/sitemap/") || path === "/discover/sitemap/directory.xml")) {
+      const endCatalog = timings.start("catalog");
       const result = await readProjectCatalog(db!, projectRevision);
+      endCatalog(result.fallback ? "fallback" : result.cached ? "warm" : "cold");
       catalog = result.catalog;
       source = result.fallback ? "fallback" : "d1";
     }
@@ -621,16 +653,14 @@ async function renderPublicDirectory(
       const missing = () =>
         pubApi ? json(() => ({ error: "publication_not_found" }), 404) : page({ kind: "not-found" }, 404);
       if (!publicationsEnabled) return missing();
-      if ((await rows(researchDb, "SELECT id FROM publication_removals WHERE id=?", id)).length) {
+      if ((await timings.measure("publication_removal", () =>
+        rows(researchDb, "SELECT id FROM publication_removals WHERE id=?", id))).length) {
         return pubApi
           ? json(() => ({ error: "publication_removed" }), 410)
           : page({ kind: "listing-removed" }, 410);
       }
-      const [row] = await rows<{ record: string }>(
-        researchDb,
-        "SELECT record FROM research_visible WHERE kind='publication' AND id=?",
-        id,
-      );
+      const [row] = await timings.measure("publication", () =>
+        rows<InstitutionRecord>(researchDb, "SELECT record FROM research_visible WHERE kind='publication' AND id=?", id));
       if (!row) return missing();
       const p: Publication = JSON.parse(row.record);
       const institution = p.institutions[0];
@@ -659,13 +689,13 @@ async function renderPublicDirectory(
             pubApi ? null : [institutionRecordsSql],
           ],
         );
-      const [[reverse, paperLinks, versions, datasetRows, institutionRecords], readNearbyInDateOrder] = await Promise.all([
+      const [[reverse, paperLinks, versions, datasetRows, institutionRecords], readNearbyInDateOrder] = await timings.measure("relationships", () => Promise.all([
         readRelationships(true).catch((error) => {
           if (!/no such table:\s*paper_repository_links\b/i.test(String(error))) throw error;
           return readRelationships(false);
         }),
         !pubApi && institution ? manyPublications(researchDb, institution, topic) : false,
-      ]);
+      ]));
 
       const related: Listing[] = [];
       for (const pid of new Set([...p.projects, ...reverse.map((r) => r.id)])) {
@@ -690,12 +720,12 @@ async function renderPublicDirectory(
             published_as: versions.some((v) => JSON.parse(v.record).id === p.published_as) ? p.published_as : null,
           },
         }));
-      const refs: Institution[] = institutionRecords.map((row) => JSON.parse(row.record));
+      const refs = parseInstitutions(institutionRecords);
       const inFacet = (field: string) =>
         ` AND EXISTS(SELECT 1 FROM research_facets f WHERE f.field='${field}' AND f.value=? AND f.id=+v.id)`;
       const nearby = institution
         ? (
-            await rows<{ kind: Listing["kind"]; record: string }>(
+            await timings.measure("nearby", () => rows<{ kind: Listing["kind"]; record: string }>(
               researchDb,
               readNearbyInDateOrder
                 ? "SELECT kind,record FROM research_visible v WHERE +kind='publication' AND +id NOT IN (?,?,?)" +
@@ -710,14 +740,14 @@ async function renderPublicDirectory(
               p.published_as ?? "",
               institution,
               ...(topic ? [topic] : []),
-            )
+            ))
           ).map((row) => ({ kind: row.kind, record: JSON.parse(row.record) }) as Listing)
         : [];
-      const similar = await similarListings(
+      const similar = await timings.measure("similar", () => similarListings(
         researchDb,
         { kind: "publication", record: p },
         [p.preprint_of ?? "", p.published_as ?? "", ...related.map((i) => i.record.id), ...linkedCode.map((i) => i.record.id), ...nearby.map((i) => i.record.id), ...datasets.map((d) => d.record.id)].filter(Boolean),
-      );
+      ));
       const institutionName = refs.find((r) => r.id === institution)?.name ?? institution;
       const more = institution
         ? {
@@ -856,7 +886,9 @@ async function renderPublicDirectory(
           )
         ).length)
     ) {
-      refs = await institutionRefs(researchDb);
+      refs = preflight && path === browsePath
+        ? parseInstitutions(preflight[2])
+        : await timings.measure("institutions", () => institutionRefs(researchDb));
     }
     const projectFilters =
       searchParams.get("tools") === "project" ||
@@ -928,7 +960,7 @@ async function renderPublicDirectory(
       const result: Results = daily
         ? { items: daily.items, counts: [], page: daily.page, total: 0 }
         : (hasPubs || hasRegionalData)
-          ? await researchQuery(researchDb, query, refs)
+          ? await timings.measure("results", () => researchQuery(researchDb, query, refs))
           : projectQuery(catalog, removed, params, options, refs);
       if (scoped && !result.total && !options[scoped[1] as keyof typeof options].has(params.get(scoped[1])!))
         return page({ kind: "not-found" }, 404);
@@ -1056,7 +1088,9 @@ async function renderPublicDirectory(
       const q = params.get("q")?.slice(0, 200).match(/[\p{L}\p{N}]+/gu);
       // Only the first page of a search shows who works on the subject.
       if (q?.length && !scope && path === browsePath && hasPubs && result.total > 1 && result.page === 1) {
-        aside = groupList(await activeGroups(researchDb, q.map((term) => '"' + term + '"*').join(" AND ")), names, params.get("q") ?? "");
+        const groups = await timings.measure("groups", () =>
+          activeGroups(researchDb, q.map((term) => '"' + term + '"*').join(" AND ")));
+        aside = groupList(groups, names, params.get("q") ?? "");
       }
       const offset = (result.page - 1) * 24;
       // An institution reached by name or alias names its reference ID as the canonical URL.
