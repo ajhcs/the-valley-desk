@@ -3,7 +3,8 @@
  * data version it was built from is unchanged, so a removal or a data load takes effect on the
  * next request. The version reads every removal table in full (they hold hundreds of rows), the
  * study and dataset visibility switches and the stored whole-directory totals written after each load.
- * Before migration 0050 the dataset tables are missing and the version is read without them.
+ * Migration 0053 adds the project revision to both cache keys, independently of summary refreshes.
+ * Older schemas keep their edge cache but cannot reuse the in-memory project catalog.
  */
 export type CacheStore = {
   match(request: Request): Promise<Response | undefined>;
@@ -34,6 +35,8 @@ const versionSql = `SELECT
   (SELECT group_concat(kind||':'||n||':'||works||':'||coalesce(added,'')||':'||coalesce(last,''),'|')
      FROM (SELECT * FROM research_summary_kinds WHERE scope_field='' AND scope_value='' ORDER BY kind)) totals`;
 
+const withProjectRevision = versionSql.replace("SELECT\n",
+  "SELECT\n  (SELECT revision FROM directory_project_revision WHERE id=1) projectRevision,\n");
 const withoutRegional = versionSql.replace(/\n {2}\(SELECT group_concat\([^\n]*regional_data_[^\n]*/g, "");
 const withoutDatasets = withoutRegional.replace(/\n {2}\(SELECT group_concat\([^\n]*dataset_[^\n]*/g, "");
 
@@ -48,18 +51,29 @@ export async function dataVersion(db: Db | undefined, build: string) {
   try {
     let result: Awaited<ReturnType<ReturnType<Db["prepare"]>["all"]>>;
     try {
-      result = await db.prepare(versionSql).all();
+      result = await db.prepare(withProjectRevision).all();
     } catch (error) {
-      if (!/no such table: (dataset_|regional_data_)/i.test(String(error))) throw error;
-      try { result = await db.prepare(withoutRegional).all(); }
-      catch (fallbackError) {
-        if (!/no such table: dataset_/i.test(String(fallbackError))) throw fallbackError;
-        result = await db.prepare(withoutDatasets).all();
+      if (!/no such table: (directory_project_revision|dataset_|regional_data_)/i.test(String(error))) throw error;
+      try {
+        result = await db.prepare(versionSql).all();
+      } catch (legacyError) {
+        if (!/no such table: (dataset_|regional_data_)/i.test(String(legacyError))) throw legacyError;
+        try { result = await db.prepare(withoutRegional).all(); }
+        catch (fallbackError) {
+          if (!/no such table: dataset_/i.test(String(fallbackError))) throw fallbackError;
+          result = await db.prepare(withoutDatasets).all();
+        }
       }
     }
     const [row] = result.results ?? [];
-    if (result.success === false || !row) return undefined;
-    return digest(build + "\n" + JSON.stringify(row));
+    if (result.success === false || !row || typeof row !== "object") return undefined;
+    const projectRevision = "projectRevision" in row ? row.projectRevision : undefined;
+    // A missing row on a migrated database prevents serving an unverifiable cached response.
+    if ("projectRevision" in row && (typeof projectRevision !== "string" || !projectRevision)) return undefined;
+    return {
+      response: await digest(build + "\n" + JSON.stringify(row)),
+      projectRevision: typeof projectRevision === "string" ? projectRevision : undefined,
+    };
   } catch {
     return undefined;
   }

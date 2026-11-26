@@ -5,6 +5,7 @@ import { readFileSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import worker from "../worker.js";
+import { projectRecordsSql } from "../src/ingest/public-directory-store";
 
 const origin = "https://thevalleydesk.org";
 
@@ -27,14 +28,21 @@ test("directory responses are cached per data version and stay correct after rem
   const dir = mkdtempSync(join(process.cwd(), "node_modules", ".directory-cache-"));
   const sqlite = new DatabaseSync(":memory:");
   let queries = 0;
+  let catalogReads = 0;
+  const batches: number[] = [];
   const env = {
     DIRECTORY_PUBLIC_ENABLED: "true",
     PUBLICATIONS_PUBLIC_ENABLED: "true",
     BUILD_SHA: "test-build",
     VALLEY_DESK_DB: {
+      async batch(statements: { all(): { results: unknown[] } }[]) {
+        batches.push(statements.length);
+        return statements.map((statement) => statement.all());
+      },
       prepare(sql: string) {
         const all = (...args: (number | string)[]) => {
           queries++;
+          if (sql === projectRecordsSql) catalogReads++;
           return { results: sqlite.prepare(sql).all(...args) };
         };
         return { all: () => all(), bind: (...args: (number | string)[]) => ({ all: () => all(...args) }) };
@@ -64,7 +72,7 @@ test("directory responses are cached per data version and stay correct after rem
     queries = 0;
     const second = await get("/discover/works?q=tissue");
     assert.equal(second.headers.get("x-directory-cache"), "hit");
-    assert.equal(queries, 2, "a legacy hit checks the current schema and reads its data version");
+    assert.equal(queries, 3, "a legacy hit checks compatibility and reads its data version");
     const secondHtml = await second.text();
     assert.equal(second.headers.get("cache-control"), "no-store", "visitors still get the original cache policy");
 
@@ -101,6 +109,45 @@ test("directory responses are cached per data version and stay correct after rem
     assert.equal(cache.puts, before);
     const fragment = await get("/discover/works?q=tissue", { headers: { "X-Valley-Desk-Fragment": "results" } });
     assert.equal(fragment.headers.get("x-directory-cache"), "miss");
+
+    // Verify the migrated path using real listing upserts and no summary refresh between reads.
+    for (const migration of ["0048_paper_repository_links", "0052_regional_data", "0053_directory_project_revision"]) {
+      sqlite.exec(readFileSync("migrations/" + migration + ".sql", "utf8"));
+    }
+    const projectFile = join(dir, "project.json");
+    const project = JSON.parse(readFileSync("src/content/public-directory-projects.json", "utf8"))
+      .find((item: { id: string }) => item.id !== "474026");
+    const loadProject = () => {
+      writeFileSync(projectFile, JSON.stringify([project]));
+      sqlite.exec(execFileSync("python3", ["ops/load-research.py", "--project-upserts", projectFile], { encoding: "utf8" }));
+    };
+    loadProject();
+    catalogReads = 0;
+    const projectPath = "/discover/work/" + project.id;
+    assert.equal((await get(projectPath)).headers.get("x-directory-cache"), "miss");
+    assert.equal((await get("/discover/works?q=a-new-query")).headers.get("x-directory-cache"), "miss");
+    assert.equal(catalogReads, 1, "separate edge misses share the prepared project catalog");
+    const migratedHit = await get(projectPath);
+    assert.equal(migratedHit.headers.get("x-directory-cache"), "hit");
+    loadProject();
+    assert.equal((await get(projectPath)).headers.get("x-directory-cache"), "hit", "an identical upsert keeps the revision");
+    project.name = "Updated software title in a live import";
+    loadProject();
+    const edited = await get(projectPath);
+    assert.equal(edited.headers.get("x-directory-cache"), "miss");
+    assert.match(await edited.text(), /Updated software title in a live import/);
+    assert.equal(catalogReads, 2);
+    sqlite.prepare("INSERT INTO public_directory_removals(github_id) VALUES(?)").run(project.id);
+    assert.equal((await get(projectPath)).status, 410);
+    assert.equal(catalogReads, 2, "a removal invalidates the page and filters the reused catalog immediately");
+
+    batches.length = 0;
+    await get("/discover/works?q=tissue&sort=relevance");
+    assert.deepEqual(batches, [2], "the search counts and first page share one batch");
+    batches.length = 0;
+    const paper = await get("/discover/publication/pmid%3A990000001");
+    assert.equal(paper.status, 200);
+    assert.deepEqual(batches, [4], "project links, versions, and institutions share one batch");
 
     // Without a readable version the cache is skipped and the page still renders.
     sqlite.exec("DROP TABLE research_summary_kinds");
