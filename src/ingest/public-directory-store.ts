@@ -20,15 +20,15 @@ function decodeProject(row: StoredProject): DirectoryProject {
 
 export async function readProjectCatalog(db: ResearchDb, version?: string) {
   const current = catalogs.get(db);
-  if (version && current?.version === version) return { catalog: current.catalog, fallback: false };
+  if (version && current?.version === version) return { catalog: current.catalog, fallback: false, cached: true };
   try {
     const records = await rows<StoredProject>(db, projectRecordsSql);
     const catalog = createDirectoryCatalog(records.map(decodeProject));
     if (version) catalogs.set(db, { version, catalog });
-    return { catalog, fallback: false };
+    return { catalog, fallback: false, cached: false };
   } catch {
     console.warn("directory_project_catalog_unavailable");
-    return { catalog: directoryCatalog, fallback: true };
+    return { catalog: directoryCatalog, fallback: true, cached: false };
   }
 }
 

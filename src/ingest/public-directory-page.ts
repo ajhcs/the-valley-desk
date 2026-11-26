@@ -16,6 +16,7 @@ import {
 import { icon } from "./public-directory-icons";
 import { supportOpen, supportPath } from "./public-support-data";
 import { supportersBand } from "./public-support-band";
+import { directoryAssetPath } from "./public-directory-assets";
 
 export type DirectoryView =
   | {
@@ -410,7 +411,7 @@ export function jsonAlternate(path: string | undefined) {
   return undefined;
 }
 
-export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatalog, origin: string, nonce?: string, nav: DirectoryNav = {}) {
+export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatalog, origin: string, nonce?: string, nav: DirectoryNav = {}, assetVersion?: string) {
   let content: string;
   switch (view.kind) {
     case "research": content = view.content; break;
@@ -429,6 +430,7 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
   const canonical = head.canonical ? origin + head.canonical : undefined;
   const robots = canonical ? head.robots : "noindex";
   const feed = head.feed ?? { title: "Directory additions", href: "/discover/updates.xml" };
+  const asset = (name: string) => directoryAssetPath(name, assetVersion);
   return `<!doctype html>
 <html lang="en-US">
   <head>
@@ -455,13 +457,13 @@ export function renderDirectoryPage(view: DirectoryView, catalog: DirectoryCatal
     ${jsonLd(head.schema, nonce)}
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&amp;family=IBM+Plex+Serif:wght@500;600&amp;display=optional">
-    <link rel="stylesheet" href="/directory-chrome.css">
-    <link rel="stylesheet" href="/directory.css">
-    <script src="/theme.js"></script>
-    <script src="/directory-theme.js" defer></script>
-    <script src="/webmcp.js" defer></script>
-    ${view.kind === "project" || view.kind === "research" ? '<script src="/directory-feedback.js" defer></script>' : ""}
-    <script src="/directory-search.js" defer></script>
+    <link rel="stylesheet" href="${asset("directory-chrome.css")}">
+    <link rel="stylesheet" href="${asset("directory.css")}">
+    <script src="${asset("theme.js")}"></script>
+    <script src="${asset("directory-theme.js")}" defer></script>
+    <script src="${asset("webmcp.js")}" defer></script>
+    ${view.kind === "project" || view.kind === "research" ? `<script src="${asset("directory-feedback.js")}" defer></script>` : ""}
+    <script src="${asset("directory-search.js")}" defer></script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   </head>
